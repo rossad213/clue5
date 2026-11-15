@@ -1,13 +1,20 @@
 {
   "version": 2,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/server/:path*",
-      "destination": "/api/blocked"
+      "src": "/server/(.*)",
+      "dest": "/api/blocked"
     },
     {
-      "source": "/data/daily-rotation.js",
-      "destination": "/api/blocked"
+      "src": "/data/daily-rotation\\.js",
+      "dest": "/api/blocked"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
