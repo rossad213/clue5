@@ -251,10 +251,10 @@ const legacyCaseIndex=()=>{let s=dateKey().replace(/\D/g,"");let h=0;for(const c
 // A frozen, publicly shared order keeps the same daily case across devices.
 // Unlike a date hash over the growing library, added cases cannot reshuffle future dates.
 const dailyRotation=window.CLUE5_DAILY_ROTATION||{start:"2026-11-15",answers:[]};
-const findCase=name=>cases.find(c=>norm(c.answer)===norm(name));
+const findCase=name=>cases.find(c=>normalizedAnswer(c.answer)===normalizedAnswer(name));
 const dayOrdinal=value=>{const parts=value.split("-").map(Number);return Math.floor(Date.UTC(parts[0],parts[1]-1,parts[2])/86400000)};
 const dailyOffset=day=>dayOrdinal(day)-dayOrdinal(dailyRotation.start);
-const reservedDailyKeys=new Set(dailyRotation.answers.map(norm));
+const reservedDailyKeys=new Set(dailyRotation.answers.map(normalizedAnswer));
 const scheduleForDay=day=>{
  const offset=dailyOffset(day);
  if(offset<0||!dailyRotation.answers.length)return null;
@@ -262,7 +262,7 @@ const scheduleForDay=day=>{
  // Practice NEVER offers any of these reserved cases, including after a cycle.
  return findCase(dailyRotation.answers[offset%dailyRotation.answers.length])||null;
 };
-const practiceCases=cases.filter(c=>!reservedDailyKeys.has(norm(c.answer)));
+const practiceCases=cases.filter(c=>!reservedDailyKeys.has(normalizedAnswer(c.answer)));
 const practiceCaseIds=new Set(practiceCases.map(c=>c.id));
 const caseIndex=()=>{const planned=scheduleForDay(dateKey());return planned?cases.indexOf(planned):legacyCaseIndex()};
 const view=v=>{for(const id of ["home","game","stats"])$(id).classList.toggle("hidden",id!==v);window.scrollTo(0,0)};const norm=normalizedAnswer;
