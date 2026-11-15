@@ -172,11 +172,36 @@ body{background:radial-gradient(ellipse at 50% 0,#302117 0,transparent 46%),#0c0
   #game .case-intro p{font-size:12px}
   #game .paper{padding-top:19px}
 }
+</style><style id="clue5-polished-rewards">
+#game .outcome{position:relative;overflow:hidden;padding:27px 24px 22px;color:#2d2015;background:linear-gradient(155deg,#f6e9cb 0%,#e4cba5 100%);box-shadow:inset 0 0 0 1px #ae875a,0 14px 30px #0005}
+#game .outcome::before,#game .outcome::after{content:"✦";position:absolute;top:28px;color:#a27d46;font-size:24px;opacity:.65}
+#game .outcome::before{left:8%}#game .outcome::after{right:8%}
+#game .outcome .result-stamp{animation:clue5-stamp .6s cubic-bezier(.19,1,.22,1) both;background:#ead4b488;transform-origin:center}
+@keyframes clue5-stamp{0%{opacity:0;transform:rotate(-13deg) scale(1.7)}65%{opacity:1;transform:rotate(-4deg) scale(.96)}100%{opacity:1;transform:rotate(-4deg) scale(1)}}
+#game .outcome .rank-line{font-size:12px;letter-spacing:.17em;color:#734019;margin:8px 0 12px}
+#game .outcome .answer-reveal{font:normal clamp(26px,4vw,37px)/1.15 Georgia,serif;color:#2d1c13;margin:7px 0 9px;overflow-wrap:anywhere}
+#game .outcome .result-subtitle{font-size:14px;color:#59412c;max-width:470px;margin:0 auto 19px;line-height:1.55}
+#game .outcome .result-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid #b5976c;background:#fff9e660;border-radius:10px;margin:14px 0 18px}
+#game .result-metrics>div{padding:14px 5px;display:flex;flex-direction:column;gap:5px;align-items:center}
+#game .result-metrics>div+div{border-left:1px solid #b5976c}
+#game .result-metrics strong{font:normal 27px Georgia,serif;color:#50301a}
+#game .result-metrics small{font:700 9px system-ui;letter-spacing:.05em;color:#694b30}
+#game .honors-wrap>.eyebrow{color:#744b2b}
+#game .honors,.badge-gallery{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:10px 0 18px}
+#game .honor-chip,.badge-gallery .honor-chip{display:flex;flex-direction:column;align-items:center;gap:4px;background:#ead5ab;border:1px solid #ad8651;border-radius:8px;padding:10px 13px;min-width:130px;color:#3c2917}
+#game .honor-chip b,.badge-gallery .honor-chip b{color:#905b25;font-size:22px}
+#game .honor-chip span,.badge-gallery .honor-chip span{font:700 11px system-ui;letter-spacing:.04em}
+#game .honor-chip small,.badge-gallery .honor-chip small{font:11px/1.3 system-ui;color:#634a2f}
+#game .outcome .result-next{background:#442a1b;color:#fff0d9;border:1px solid #6a4625;margin-top:3px}
+.achievements-history{padding:19px 4px}.achievements-history .eyebrow{text-align:center}
+#game #shareWrap:not(.hidden){justify-content:center}
+@media(max-width:520px){#game .outcome{padding:19px 12px}#game .outcome .result-stamp{letter-spacing:.09em;padding:10px 13px}#game .result-metrics strong{font-size:23px}#game .result-metrics small{font-size:8px}}
+@media(prefers-reduced-motion:reduce){#game .outcome .result-stamp{animation:none}}
 </style></head><body>
 <header class="top"><button class="brand" id="homeLink">◈ CLUE<b>5</b></button><button class="mini" id="statsButton">◫ Statistics</button></header>
 <main class="wrap"><section id="home"><div class="hero"><div class="hero-content"><div class="eyebrow">The detective's desk · Case files are open</div><h1>FIVE CLUES.<br><em>ONE MYSTERY.</em></h1><p>Trust your instincts. Follow the evidence.<br>Every clue brings you closer to the truth.</p><div class="chips"><span>◈ Five clues</span><span>⌖ Six guesses</span><span>✧ New daily case</span></div><button class="hero-cta" id="heroDaily">START DAILY CASE →</button><div class="hero-sub">▦ A NEW MYSTERY EVERY DAY</div></div></div><div class="cards"><article class="card"><div class="eyebrow">The official investigation</div><h2>Daily Mystery</h2><p>One shared mystery each day. Solve it in fewer clues to earn more points and protect your streak.</p><button class="btn" id="daily">OPEN TODAY'S CASE ↗</button><div class="small" id="dailyStatus"></div></article><article class="card"><div class="eyebrow">The investigation never ends</div><h2>Unlimited Practice</h2><p>Explore hundreds of mysteries spanning people, places, science, history, art, entertainment and more.</p><button class="btn outline" id="practice">ENTER CASE ARCHIVES ↗</button><div class="small"><span id="archiveCount">Over 500 mysteries</span> · No repeats until the archive cycles.</div></article></div><div class="rules"><article><strong>01 · Examine evidence</strong><p>Clues start extremely vague and grow progressively easier.</p></article><article><strong>02 · Make your accusation</strong><p>Six guesses per case. Revealing another clue is free.</p></article><article><strong>03 · Crack the case</strong><p>The earlier you solve, the higher your score.</p></article></div></section>
 <section id="game" class="hidden"><div class="bar"><button class="linkbtn" id="back">← Detective's Desk</button><span class="eyebrow" id="mode"></span></div><div class="case-intro"><div class="eyebrow">◈ CONFIDENTIAL INVESTIGATION</div><h2>Follow the evidence.</h2><p>Five clues. Six chances. One mystery to uncover.</p></div><div class="game-scene"><div class="layout"><article class="paper"><div class="file-heading"><div><div class="eyebrow" id="category"></div><h2>The Unknown</h2></div><div class="case-stamp">TOP SECRET<small>CASE OPEN</small></div></div><div class="evidence-title"><span class="eyebrow">THE EVIDENCE BOARD</span><span class="eyebrow" id="count"></span></div><div class="steps" id="steps"></div><div id="evidence"></div><div id="notice" class="notice" role="status"></div><div class="deduction-desk"><form id="guessForm"><label for="guess">YOUR DEDUCTION</label><div class="row"><input id="guess" required autocomplete="off" maxlength="80" placeholder="Who or what could it be?"><button class="btn">SUBMIT GUESS ↗</button></div></form><div id="actions" class="actions"><button id="reveal" type="button" class="btn outline">REVEAL NEXT CLUE ↓</button><button id="giveup" type="button" class="linkbtn">Close case and reveal answer</button></div><div id="outcome" class="outcome hidden"></div><div id="shareWrap" class="hidden"><button type="button" class="btn outline" id="shareResult">COPY CASE REPORT ↗</button><span id="shareStatus" role="status"></span></div></div></article><aside class="side"><div class="side-header"><div class="eyebrow">◈ DETECTIVE'S NOTEBOOK</div><h3>Investigation status</h3></div><div class="side-section"><div class="eyebrow">GUESSES REMAINING</div><div id="dots" class="dots"></div><div class="counter"><span id="remaining">6</span><small>/6</small></div><div class="small">Incorrect guesses use an attempt.</div></div><div class="side-section"><div class="eyebrow">AVAILABLE POINTS</div><div class="points" id="potential">100</div><div class="small">Reveal clues freely. Earlier solves earn more points.</div></div><div class="side-footer">✦ EVERY DETAIL MATTERS</div></aside></div></div></section>
-<section id="stats" class="hidden"><button id="statsBack" class="linkbtn">← Detective's Desk</button><div class="stats"><div class="eyebrow">Detective personnel file</div><h2>Your Statistics</h2><p class="small">Records are saved in this browser only.</p><div class="statgrid" id="statgrid"></div><button id="reset" class="linkbtn">Clear saved records</button></div></section></main><footer>CLUE5 ◈ EVERY MYSTERY HAS AN ANSWER</footer>
+<section id="stats" class="hidden"><button id="statsBack" class="linkbtn">← Detective's Desk</button><div class="stats"><div class="eyebrow">Detective personnel file</div><h2>Your Statistics</h2><p class="small">Records are saved in this browser only.</p><div class="statgrid" id="statgrid"></div><div class="achievements-history"><div class="eyebrow">✦ YOUR DETECTIVE HONORS</div><div id="badgeGallery" class="badge-gallery"></div></div><button id="reset" class="linkbtn">Clear saved records</button></div></section></main><footer>CLUE5 ◈ EVERY MYSTERY HAS AN ANSWER</footer>
 <script src="data/practice.js"></script>
 <script>
 const raw=[];
@@ -284,7 +309,66 @@ async function start(daily){
  $('category').textContent='CASE #'+String(chosen.id).padStart(3,'0')+' · '+chosen.category.toUpperCase();
  $('guess').value='';render();view('game');
 }
-function render(){if(!state)return;const s=state;$("count").textContent=String(s.clue).padStart(2,"0")+" / 05";$("steps").innerHTML=Array.from({length:5},(_,i)=>'<div class="step '+(i<s.clue?'on':'')+'">'+(i+1)+'</div>').join("");$("evidence").innerHTML=s.c.clues.slice(0,s.clue).map((e,i)=>'<div class="evidence"><small>EVIDENCE '+(i+1)+'</small><p></p></div>').join("");[...$("evidence").querySelectorAll("p")].forEach((p,i)=>p.textContent=s.c.clues[i]);$("dots").innerHTML=Array.from({length:6},(_,i)=>'<div class="dot '+(i<s.used?'off':'')+'"></div>').join("");$("remaining").textContent=6-s.used;$("potential").textContent=120-s.clue*20;$("guessForm").classList.toggle("hidden",s.done);$("actions").classList.toggle("hidden",s.done);$("reveal").disabled=s.clue===5;$("outcome").classList.toggle("hidden",!s.done);$("notice").textContent="";if(s.done){const o=$("outcome");o.replaceChildren();let label=document.createElement("div");label.className="eyebrow";label.textContent=s.won?"CASE SOLVED":"CASE CLOSED";let h=document.createElement("h3");h.textContent=s.c.answer;let p=document.createElement("p");p.textContent=s.won?"Excellent deduction! "+s.score+" points earned using "+s.clue+" clue(s) and "+s.used+" incorrect guess(es).":"The mystery has been revealed. Score: 0.";let b=document.createElement("button");b.className="btn outline";b.textContent="PLAY ANOTHER PRACTICE CASE ↗";b.onclick=()=>start(false);const stamp=document.createElement("div");stamp.className="result-stamp";stamp.textContent=s.won?"CASE SOLVED":"CASE CLOSED";const rank=document.createElement("div");rank.className="rank-line";rank.textContent=s.won?(s.clue===1?"✦ LEGENDARY DETECTIVE":s.clue===2?"✦ MASTER DETECTIVE":s.clue===3?"✦ SENIOR INVESTIGATOR":s.clue===4?"✦ DETECTIVE":"✦ ROOKIE DETECTIVE"):"✦ UNSOLVED CASE";o.append(stamp,label,rank,h,p,b);$("shareWrap").classList.remove("hidden");$("shareStatus").textContent=""}else{$("shareWrap").classList.add("hidden")}}function finish(won){state.done=true;state.won=won;state.score=won?120-state.clue*20:0;save();render();dailyStatus()}
+function winStreak(){
+ let streak=0;
+ const now=dayOrdinal(dateKey());
+ for(let i=0;i<365;i++){
+  const k=new Date((now-i)*86400000).toISOString().slice(0,10);
+  if(data.daily[k]?.won)streak++;
+  else if(i===0&&!data.daily[k]?.done)continue;
+  else break;
+ }
+ return streak;
+}
+function earnedHonors(s){
+ if(!s?.done||!s.won)return[];
+ const honors=[];
+ const victories=Object.values(data.daily||{}).filter(x=>x.won).length;
+ if(s.clue===1)honors.push(['✦','Eagle Eye','Solved on the first clue']);
+ else if(s.clue<=2)honors.push(['◆','Sharp Instincts','Solved with two clues or fewer']);
+ if(s.used===0)honors.push(['◈','Flawless Deduction','No incorrect guesses']);
+ if(s.daily&&winStreak()>=3)honors.push(['★','On a Roll','Three or more consecutive daily wins']);
+ if(s.daily&&winStreak()>=7)honors.push(['♛','Unstoppable','Seven or more consecutive daily wins']);
+ if(victories>=10)honors.push(['✧','Case Veteran','Ten daily cases solved']);
+ if((data.practice||0)>=25)honors.push(['✶','Archive Explorer','Twenty-five practice cases completed']);
+ return honors;
+}
+function badgeElement(item){
+ const el=document.createElement('div');el.className='honor-chip';
+ const symbol=document.createElement('b');symbol.textContent=item[0];
+ const words=document.createElement('span');words.textContent=item[1];
+ const desc=document.createElement('small');desc.textContent=item[2];
+ el.append(symbol,words,desc);return el;
+}
+function shareText(s){
+ const icons=Array.from({length:5},(_,i)=>i<s.clue?(s.won&&i===s.clue-1?'🟩':'🟨'):'⬛').join('');
+ const label=s.daily?'Daily':'Practice';
+ const rank=s.won?(['','LEGENDARY','MASTER','SENIOR','DETECTIVE','ROOKIE'][s.clue]):'UNSOLVED';
+ return 'CLUE5 ◈ '+label+' • '+s.day+'\n'+icons+'\n'+(s.won?'CASE SOLVED • '+s.score+' points • '+rank:'CASE CLOSED • UNSOLVED')+'\n'+s.used+'/6 incorrect guesses\nhttps://clue-five-wheat.vercel.app';
+}
+function render(){if(!state)return;const s=state;$("count").textContent=String(s.clue).padStart(2,"0")+" / 05";$("steps").innerHTML=Array.from({length:5},(_,i)=>'<div class="step '+(i<s.clue?'on':'')+'">'+(i+1)+'</div>').join("");$("evidence").innerHTML=s.c.clues.slice(0,s.clue).map((e,i)=>'<div class="evidence"><small>EVIDENCE '+(i+1)+'</small><p></p></div>').join("");[...$("evidence").querySelectorAll("p")].forEach((p,i)=>p.textContent=s.c.clues[i]);$("dots").innerHTML=Array.from({length:6},(_,i)=>'<div class="dot '+(i<s.used?'off':'')+'"></div>').join("");$("remaining").textContent=6-s.used;$("potential").textContent=120-s.clue*20;$("guessForm").classList.toggle("hidden",s.done);$("actions").classList.toggle("hidden",s.done);$("reveal").disabled=s.clue===5;$("outcome").classList.toggle("hidden",!s.done);$("notice").textContent="";if(s.done){
+ const o=$('outcome');o.replaceChildren();
+ const stamp=document.createElement('div');stamp.className='result-stamp';stamp.textContent=s.won?'CASE SOLVED':'CASE CLOSED';
+ const label=document.createElement('div');label.className='eyebrow result-label';label.textContent=s.won?'INVESTIGATION COMPLETE':'INVESTIGATION ENDED';
+ const title=document.createElement('h3');title.className='answer-reveal';title.textContent=s.c.answer||'Answer unavailable';
+ const rank=document.createElement('div');rank.className='rank-line';rank.textContent=s.won?(['','✦ LEGENDARY DETECTIVE','✦ MASTER DETECTIVE','✦ SENIOR INVESTIGATOR','✦ DETECTIVE','✦ ROOKIE DETECTIVE'][s.clue]):'✦ UNSOLVED CASE';
+ const sub=document.createElement('p');sub.className='result-subtitle';sub.textContent=s.won?'Your reasoning uncovered the answer. Well done, detective.':'Every investigation teaches you something. Review the evidence and try another case.';
+ const grid=document.createElement('div');grid.className='result-metrics';
+ for(const [value,name] of [[s.score,'POINTS EARNED'],[s.clue+'/5','CLUES USED'],[s.used+'/6','INCORRECT GUESSES']]){
+  const cell=document.createElement('div');const v=document.createElement('strong');v.textContent=value;const n=document.createElement('small');n.textContent=name;cell.append(v,n);grid.append(cell);
+ }
+ const honors=earnedHonors(s);
+ const honorsWrap=document.createElement('div');honorsWrap.className='honors-wrap';
+ if(honors.length){const caption=document.createElement('div');caption.className='eyebrow';caption.textContent='✧ DETECTIVE HONORS';honorsWrap.append(caption);const row=document.createElement('div');row.className='honors';honors.forEach(item=>row.append(badgeElement(item)));honorsWrap.append(row)}
+ const next=document.createElement('button');next.type='button';next.className='btn result-next';next.textContent='OPEN A PRACTICE CASE ↗';next.onclick=()=>start(false);
+ o.append(stamp,label,rank,title,sub,grid,honorsWrap,next);
+ $('shareWrap').classList.remove('hidden');$('shareStatus').textContent='';
+ }else{$("shareWrap").classList.add("hidden")}}function finish(won){state.done=true;state.won=won;state.score=won?120-state.clue*20:0;save();render();dailyStatus()}
 $("guessForm").onsubmit=e=>{e.preventDefault();if(!state||state.done)return;const text=$("guess").value.trim();if(!text)return;if(state.daily){playDaily("guess",{guess:text});return;}if(isCorrect(text,state.c)){finish(true)}else{state.used++;$("guess").value="";if(state.used>=6)finish(false);else{save();render();$("notice").textContent="Incorrect. "+(6-state.used)+" guesses remaining."}}};
-$("reveal").onclick=()=>{if(!state||state.done||state.clue>=5)return;if(state.daily){playDaily("reveal");return;}state.clue++;save();render()};$("shareResult").onclick=async()=>{if(!state?.done)return;const s=state;const icons=Array.from({length:5},(_,i)=>i<s.clue?(s.won&&i===s.clue-1?"🟩":"🟨"):"⬛").join("");const label=s.daily?"Daily":"Practice";const report="Clue5 "+label+" • "+s.day+"\n"+icons+"\n"+(s.won?"Solved on clue "+s.clue+" • "+s.score+" pts":"Unsolved")+" • "+s.used+"/6 wrong guesses\nhttps://clue-five-wheat.vercel.app";try{await navigator.clipboard.writeText(report);$("shareStatus").textContent="Copied! Share without spoilers."}catch{$("shareStatus").textContent=report}};$("giveup").onclick=()=>{if(!state||state.done||!confirm("Close this case and reveal the answer?"))return;if(state.daily)playDaily("giveup");else finish(false)};$("homeLink").onclick=$("back").onclick=$("statsBack").onclick=()=>{dailyStatus();view("home")};$("daily").onclick=()=>start(true);$("practice").onclick=()=>start(false);$("statsButton").onclick=()=>{const arr=Object.values(data.daily||{}),solved=arr.filter(x=>x.won);const total=solved.reduce((n,x)=>n+x.score,0);let last=0;for(let d=new Date();last<366;d.setDate(d.getDate()-1)){let key=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);let r=data.daily[key];if(r?.won)last++;else if(last===0&&!r)continue;else break}const vals=[["Daily cases",arr.length],["Daily wins",solved.length],["Daily points",total],["Practice cases",data.practice||0],["Avg clues",solved.length?(solved.reduce((a,x)=>a+x.clue,0)/solved.length).toFixed(1):"—"],["Recent streak",last]];$("statgrid").innerHTML=vals.map(([name,value])=>'<div class="statitem"><b>'+value+'</b><span>'+name+'</span></div>').join("");view("stats")};$("reset").onclick=()=>{if(confirm("Erase all Clue5 data saved on this browser?")){data={daily:{},practice:0,practiceSeen:[]};store();dailyStatus();view("home")}};function dailyStatus(){const d=data.daily[dateKey()];$("dailyStatus").textContent=d?.done?(d.won?"Solved today · "+d.score+" points":"Today's case completed · Come back tomorrow"):d?"Case in progress · Continue anytime":"New mystery every day at midnight Central";$("daily").textContent=d?.done?"VIEW TODAY'S RESULTS ↗":d?"CONTINUE TODAY'S CASE ↗":"OPEN TODAY'S CASE ↗"}dailyStatus();document.getElementById("archiveCount").textContent=practiceCases.length+" spoiler-free practice mysteries · "+CASE_COUNT+" total cases";document.getElementById("heroDaily").onclick=()=>start(true);
+$("reveal").onclick=()=>{if(!state||state.done||state.clue>=5)return;if(state.daily){playDaily("reveal");return;}state.clue++;save();render()};$("shareResult").onclick=async()=>{
+ if(!state?.done)return;
+ const report=shareText(state);
+ if(navigator.share){try{await navigator.share({title:'Clue5 Case Report',text:report});$('shareStatus').textContent='Case report shared.';return;}catch(e){if(e.name==='AbortError')return;}}
+ try{await navigator.clipboard.writeText(report);$('shareStatus').textContent='Spoiler-free report copied!';}catch{$('shareStatus').textContent=report;}
+};$("giveup").onclick=()=>{if(!state||state.done||!confirm("Close this case and reveal the answer?"))return;if(state.daily)playDaily("giveup");else finish(false)};$("homeLink").onclick=$("back").onclick=$("statsBack").onclick=()=>{dailyStatus();view("home")};$("daily").onclick=()=>start(true);$("practice").onclick=()=>start(false);$("statsButton").onclick=()=>{const arr=Object.values(data.daily||{}),solved=arr.filter(x=>x.won);const total=solved.reduce((n,x)=>n+x.score,0);let last=0;for(let d=new Date();last<366;d.setDate(d.getDate()-1)){let key=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);let r=data.daily[key];if(r?.won)last++;else if(last===0&&!r)continue;else break}const vals=[["Daily cases",arr.length],["Daily wins",solved.length],["Daily points",total],["Practice cases",data.practice||0],["Avg clues",solved.length?(solved.reduce((a,x)=>a+x.clue,0)/solved.length).toFixed(1):"—"],["Recent streak",last]];$("statgrid").innerHTML=vals.map(([name,value])=>'<div class="statitem"><b>'+value+'</b><span>'+name+'</span></div>').join("");const gallery=$('badgeGallery');gallery.replaceChildren();const current={done:true,won:true,clue:Math.min(5,Math.max(1,Math.round(solved.reduce((a,x)=>a+x.clue,0)/(solved.length||1)))),used:0,daily:true};const earned=earnedHonors(current);if(earned.length)earned.forEach(item=>gallery.append(badgeElement(item)));else gallery.textContent='Solve cases to unlock detective honors.';view("stats")};$("reset").onclick=()=>{if(confirm("Erase all Clue5 data saved on this browser?")){data={daily:{},practice:0,practiceSeen:[]};store();dailyStatus();view("home")}};function dailyStatus(){const d=data.daily[dateKey()];$("dailyStatus").textContent=d?.done?(d.won?"Solved today · "+d.score+" points":"Today's case completed · Come back tomorrow"):d?"Case in progress · Continue anytime":"New mystery every day at midnight Central";$("daily").textContent=d?.done?"VIEW TODAY'S RESULTS ↗":d?"CONTINUE TODAY'S CASE ↗":"OPEN TODAY'S CASE ↗"}dailyStatus();document.getElementById("archiveCount").textContent=practiceCases.length+" spoiler-free practice mysteries · "+CASE_COUNT+" total cases";document.getElementById("heroDaily").onclick=()=>start(true);
 </script></body></html>
