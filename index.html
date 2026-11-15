@@ -283,7 +283,7 @@ async function playDaily(action,extra={}){
    updateDaily(result);
    if(action==='guess'&&!result.won&&result.used>oldUsed&&!result.done)$('notice').textContent='Incorrect. '+(6-result.used)+' guesses remaining.';
  }catch(error){$('notice').textContent=error.message;}
- finally{controls.forEach(b=>b.disabled=false);if(state?.done)$('guessForm').classList.add('hidden');}
+ finally{controls[0].disabled=!!state?.done||state?.clue>=5;controls[1].disabled=!!state?.done;controls[2].disabled=!!state?.done;if(state?.done)$('guessForm').classList.add('hidden');}
 }
 async function start(daily){
  const day=dateKey();
