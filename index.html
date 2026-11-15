@@ -225,15 +225,15 @@ const cases=uniqueRaw.map((r,i)=>({id:i+1,answer:r[0],category:r[1],clues:r[2],a
 // newly added case's original fifth clue would disclose the name verbatim.
 // These cases should undergo individual clue editing before daily rotation.
 function solutionHint(answer){
-  const label=answer.replace(/^(the|a|an)\\s+/i,"").replace(/[^a-zA-Z0-9\\s-]/g," ").trim();
-  const words=label.split(/\\s+/).filter(Boolean);
+  const label=answer.replace(/^(the|a|an)\s+/i,"").replace(/[^a-zA-Z0-9\s-]/g," ").trim();
+  const words=label.split(/\s+/).filter(Boolean);
   const initials=words.map(w=>w[0].toUpperCase()).join(" · ");
   const letters=label.replace(/[^a-zA-Z0-9]/g,"").length;
   if(words.length===1)return "Final evidence: The name begins with "+initials+" and has "+letters+" letters.";
   return "Final evidence: The answer has "+words.length+" words, with initials "+initials+".";
 }
 for(const c of cases.slice(25)){
-  const answerKey=normalizedAnswer(c.answer.replace(/^(the|a|an)\\s+/i,""));
+  const answerKey=normalizedAnswer(c.answer.replace(/^(the|a|an)\s+/i,""));
   const fifthKey=normalizedAnswer(c.clues[4]);
   if(answerKey.length>=5 && fifthKey.includes(answerKey))c.clues[4]=solutionHint(c.answer);
 }
