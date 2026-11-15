@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/server/:path*",
+      "destination": "/api/blocked"
+    },
+    {
+      "source": "/data/daily-rotation.js",
+      "destination": "/api/blocked"
+    }
+  ]
+}
