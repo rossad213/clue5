@@ -278,9 +278,12 @@ if(daily){
 }else{
   const seen=new Set((data.practiceSeen||[]).filter(id=>practiceCaseIds.has(id)));
   // Never sample the 730 daily-only mysteries, even after exhausting practice.
-  let pool=practiceCases.filter(x=>!seen.has(x.id)&&x.id!==state?.c?.id);
-  if(!pool.length){seen.clear();pool=practiceCases.filter(x=>x.id!==state?.c?.id);}
-  if(!pool.length)pool=practiceCases;
+  const todaysSaved=data.daily[day];
+  const todayCase=todaysSaved?.answer?findCase(todaysSaved.answer):todaysSaved?.id?cases.find(x=>x.id===todaysSaved.id):scheduleForDay(day)||cases[legacyCaseIndex()];
+  const eligiblePractice=practiceCases.filter(x=>x.id!==todayCase?.id);
+  let pool=eligiblePractice.filter(x=>!seen.has(x.id)&&x.id!==state?.c?.id);
+  if(!pool.length){seen.clear();pool=eligiblePractice.filter(x=>x.id!==state?.c?.id);}
+  if(!pool.length)pool=eligiblePractice;
   if(!pool.length){$("dailyStatus").textContent="No practice cases are available right now.";view("home");return;}
   const chosen=pool[Math.floor(Math.random()*pool.length)];
   idx=cases.indexOf(chosen);
