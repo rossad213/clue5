@@ -33,8 +33,11 @@
 <path d="M286 98L321 292L520 292"/>
 <path d="M142 291L321 292L468 108"/>
 <path d="M321 292L321 440"/>
+<!-- Attach the two upper photograph pins to the main evidence network. -->
+<path d="M112 38L286 98"/>
+<path d="M538 17L468 108"/>
 </g>
-<g fill="#c83223" stroke="#661410" stroke-width="3"><circle cx="286" cy="98" r="8"/><circle cx="468" cy="108" r="8"/><circle cx="520" cy="292" r="8"/><circle cx="321" cy="292" r="8"/><circle cx="142" cy="291" r="8"/><circle cx="321" cy="440" r="8"/></g>
+<g fill="#c83223" stroke="#661410" stroke-width="3"><circle cx="112" cy="38" r="7"/><circle cx="538" cy="17" r="8"/><circle cx="286" cy="98" r="8"/><circle cx="468" cy="108" r="8"/><circle cx="520" cy="292" r="8"/><circle cx="321" cy="292" r="8"/><circle cx="142" cy="291" r="8"/><circle cx="321" cy="440" r="8"/></g>
 </g>
 <!-- hanging lamp -->
 <path d="M1120 0V40" stroke="#302b29" stroke-width="10"/><path d="M1030 52Q1047 12 1125 12Q1202 12 1225 52L1242 101H1015Z" fill="#151414" stroke="#513829" stroke-width="8"/><ellipse cx="1128" cy="100" rx="113" ry="20" fill="#bb6c30"/><ellipse cx="1128" cy="105" rx="92" ry="13" fill="#f6c37c" opacity=".75"/><ellipse cx="1128" cy="150" rx="190" ry="140" fill="url(#light)"/>
@@ -42,5 +45,5 @@
 <path d="M0 700V365Q22 310 63 297L72 255Q44 225 53 191Q65 151 111 160Q157 161 165 201Q170 229 149 255L152 300Q230 331 260 415L275 700Z" fill="url(#shade)"/><path d="M6 195Q60 145 118 153Q183 151 209 184L156 198L25 206Z" fill="#090a0b"/><path d="M83 153L87 111Q124 98 160 119L160 159Z" fill="#101010"/><path d="M7 385Q120 350 184 378L225 700H0" fill="#141313"/><path d="M146 300L115 376L85 304" fill="#3e2c21"/>
 <!-- desk items -->
 <path d="M660 580l230-12 84 93-270 19Z" fill="#b3895e"/><path d="M700 598l160-10 40 55-180 10Z" fill="#dac39d"/><g transform="translate(1150 590) rotate(-16)"><circle cx="47" cy="44" r="55" fill="none" stroke="#c19250" stroke-width="15"/><circle cx="47" cy="44" r="43" fill="#f1d3a8" fill-opacity=".13"/><path d="M92 88l67 90" stroke="#a87435" stroke-width="20" stroke-linecap="round"/></g>
-<g opacity=".8"><rect x="990" y="612" width="145" height="36" rx="3" fill="#b08a5a" transform="rotate(5 990 612)"/><text x="1011" y="638" font-family="serif" font-size="23" font-weight="bold" fill="#7c2623" transform="rotate(5 1011 638)">DAILY CASE</text></g>
+<g opacity=".88"><rect x="945" y="612" width="161" height="39" rx="3" fill="#b08a5a" transform="rotate(5 945 612)"/><text x="958" y="639" font-family="serif" font-size="23" font-weight="bold" fill="#7c2623" transform="rotate(5 958 639)">DAILY CASE</text></g>
 </svg>
