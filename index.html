@@ -177,51 +177,9 @@ body{background:radial-gradient(ellipse at 50% 0,#302117 0,transparent 46%),#0c0
 <main class="wrap"><section id="home"><div class="hero"><div class="hero-content"><div class="eyebrow">The detective's desk · Case files are open</div><h1>FIVE CLUES.<br><em>ONE MYSTERY.</em></h1><p>Trust your instincts. Follow the evidence.<br>Every clue brings you closer to the truth.</p><div class="chips"><span>◈ Five clues</span><span>⌖ Six guesses</span><span>✧ New daily case</span></div><button class="hero-cta" id="heroDaily">START DAILY CASE →</button><div class="hero-sub">▦ A NEW MYSTERY EVERY DAY</div></div></div><div class="cards"><article class="card"><div class="eyebrow">The official investigation</div><h2>Daily Mystery</h2><p>One shared mystery each day. Solve it in fewer clues to earn more points and protect your streak.</p><button class="btn" id="daily">OPEN TODAY'S CASE ↗</button><div class="small" id="dailyStatus"></div></article><article class="card"><div class="eyebrow">The investigation never ends</div><h2>Unlimited Practice</h2><p>Explore hundreds of mysteries spanning people, places, science, history, art, entertainment and more.</p><button class="btn outline" id="practice">ENTER CASE ARCHIVES ↗</button><div class="small"><span id="archiveCount">Over 500 mysteries</span> · No repeats until the archive cycles.</div></article></div><div class="rules"><article><strong>01 · Examine evidence</strong><p>Clues start extremely vague and grow progressively easier.</p></article><article><strong>02 · Make your accusation</strong><p>Six guesses per case. Revealing another clue is free.</p></article><article><strong>03 · Crack the case</strong><p>The earlier you solve, the higher your score.</p></article></div></section>
 <section id="game" class="hidden"><div class="bar"><button class="linkbtn" id="back">← Detective's Desk</button><span class="eyebrow" id="mode"></span></div><div class="case-intro"><div class="eyebrow">◈ CONFIDENTIAL INVESTIGATION</div><h2>Follow the evidence.</h2><p>Five clues. Six chances. One mystery to uncover.</p></div><div class="game-scene"><div class="layout"><article class="paper"><div class="file-heading"><div><div class="eyebrow" id="category"></div><h2>The Unknown</h2></div><div class="case-stamp">TOP SECRET<small>CASE OPEN</small></div></div><div class="evidence-title"><span class="eyebrow">THE EVIDENCE BOARD</span><span class="eyebrow" id="count"></span></div><div class="steps" id="steps"></div><div id="evidence"></div><div id="notice" class="notice" role="status"></div><div class="deduction-desk"><form id="guessForm"><label for="guess">YOUR DEDUCTION</label><div class="row"><input id="guess" required autocomplete="off" maxlength="80" placeholder="Who or what could it be?"><button class="btn">SUBMIT GUESS ↗</button></div></form><div id="actions" class="actions"><button id="reveal" type="button" class="btn outline">REVEAL NEXT CLUE ↓</button><button id="giveup" type="button" class="linkbtn">Close case and reveal answer</button></div><div id="outcome" class="outcome hidden"></div><div id="shareWrap" class="hidden"><button type="button" class="btn outline" id="shareResult">COPY CASE REPORT ↗</button><span id="shareStatus" role="status"></span></div></div></article><aside class="side"><div class="side-header"><div class="eyebrow">◈ DETECTIVE'S NOTEBOOK</div><h3>Investigation status</h3></div><div class="side-section"><div class="eyebrow">GUESSES REMAINING</div><div id="dots" class="dots"></div><div class="counter"><span id="remaining">6</span><small>/6</small></div><div class="small">Incorrect guesses use an attempt.</div></div><div class="side-section"><div class="eyebrow">AVAILABLE POINTS</div><div class="points" id="potential">100</div><div class="small">Reveal clues freely. Earlier solves earn more points.</div></div><div class="side-footer">✦ EVERY DETAIL MATTERS</div></aside></div></div></section>
 <section id="stats" class="hidden"><button id="statsBack" class="linkbtn">← Detective's Desk</button><div class="stats"><div class="eyebrow">Detective personnel file</div><h2>Your Statistics</h2><p class="small">Records are saved in this browser only.</p><div class="statgrid" id="statgrid"></div><button id="reset" class="linkbtn">Clear saved records</button></div></section></main><footer>CLUE5 ◈ EVERY MYSTERY HAS AN ANSWER</footer>
-<script src="data/people.js"></script>
-<script src="data/people-extra.js"></script>
-<script src="data/places.js"></script>
-<script src="data/science.js"></script>
-<script src="data/history.js"></script>
-<script src="data/culture.js"></script>
-<script src="data/space-nature.js"></script>
-<script src="data/sports.js"></script>
-<script src="data/wildlife.js"></script>
-<script src="data/food.js"></script>
-<script src="data/countries.js"></script>
-<script src="data/songs.js"></script>
-<script src="data/inventions.js"></script>
-<script src="data/tv.js"></script>
-<script src="data/movies.js"></script>
-<script src="data/events-extra.js"></script>
-<script src="data/daily-rotation.js"></script>
+<script src="data/practice.js"></script>
 <script>
-const raw=[
-["Marie Curie","Person",["Some of my most important work involved things that could not be seen.","I spent much of my career investigating an unusual form of energy.","My work transformed the understanding of the atom.","I discovered two chemical elements with a close collaborator.","I won Nobel Prizes in both Physics and Chemistry."],["Madame Curie"]],
-["Mount Everest","Place",["My importance depends on how one chooses to measure.","My surroundings make ordinary travel extraordinary.","I sit on a border in Asia.","Many climbers need supplemental oxygen to reach my summit.","I am Earth's highest mountain above sea level."],["Everest"]],
-["The Titanic","Event",["My first journey became my last.","Confidence in modern engineering was part of my story.","My journey began in Europe and was meant to end in North America.","An iceberg changed my course in the North Atlantic.","I was a famous passenger liner that sank in 1912."],["RMS Titanic","Titanic sinking"]],
-["The Internet","Invention",["I have no single building that contains me.","My earliest forms served a comparatively small community.","I grew through standards that allowed separate systems to communicate.","I connect computers and networks worldwide.","Websites and email commonly operate through me."],["Internet"]],
-["Nelson Mandela","Person",["My journey included many years when I could not move freely.","I became influential in a struggle over political rights.","Reconciliation became central to my public leadership.","I spent 27 years in prison under apartheid.","I became South Africa's first Black president."],["Mandela"]],
-["The Great Wall of China","Place",["I am not a single unbroken creation.","I grew through repeated efforts over centuries.","My purpose included defense and controlling movement.","I stretch across parts of northern China.","I am a famous series of ancient Chinese walls and fortifications."],["Great Wall"]],
-["The Moon","Object",["My appearance follows a predictable rhythm.","I shape events on a world other than myself.","I have inspired calendars and myths.","I influence Earth's tides and display phases.","I am Earth's natural satellite."],["Moon"]],
-["Ada Lovelace","Person",["My best-known legacy concerns possibilities not fully realized in my lifetime.","I worked through mathematics rather than manufactured devices.","My notes explored machines manipulating symbols.","I collaborated intellectually with Charles Babbage's ideas.","I am often described as the first computer programmer."],["Augusta Ada King","Augusta Ada Lovelace"]],
-["The Eiffel Tower","Place",["My acceptance was not universal when first proposed.","I began as a temporary centerpiece for a major gathering.","My material was a statement of industrial ability.","I was built for an 1889 world's fair.","I am the famous iron landmark in Paris."],["Eiffel Tower"]],
-["Penicillin","Discovery",["An unexpected visitor changed a routine investigation.","My usefulness developed after my initial observation.","I transformed the treatment of many bacterial infections.","Alexander Fleming noticed my effect in a contaminated culture.","I was the first widely used antibiotic."],["Penicillin discovery"]],
-["Serena Williams","Person",["My achievements include remarkable endurance across generations.","My success was often shared with someone close to me.","I excelled in a sport of individual and doubles competition.","My sister Venus also became a Grand Slam champion.","I won 23 Grand Slam singles titles in tennis."],["Serena"]],
-["The Printing Press","Invention",["My influence extended far beyond my original purpose.","I reduced the effort needed to reproduce information.","I reshaped access to books and ideas in Europe.","Johannes Gutenberg helped popularize my movable-type version.","I mass-produce printed pages."],["Movable type printing press","Gutenberg press"]],
-["The Amazon River","Place",["My scale changes with the seasons.","I connect ecosystems across an enormous basin.","I pass through a vast tropical rainforest.","I flow across northern South America toward the Atlantic.","I am one of the world's greatest rivers by discharge."],["Amazon"]],
-["The Berlin Wall","Event",["My existence was as political as physical.","I became a symbol of a divided world.","Families lived on opposite sides of me for decades.","My opening in 1989 marked a turning point in the Cold War.","I separated East and West Berlin."],["Berlin Wall","Fall of the Berlin Wall"]],
-["Leonardo da Vinci","Person",["My interests were difficult to contain within one discipline.","Many of my sketches explored machines long before their time.","I studied anatomy as well as art.","I painted The Last Supper.","I painted the Mona Lisa."],["Leonardo","Da Vinci"]],
-["The Compass","Object",["My usefulness does not depend on knowing the destination.","I became essential for journeys far from familiar landmarks.","I take advantage of a natural property of Earth.","A needle in me commonly aligns with a magnetic field.","I help people find north."],["Compass","Magnetic compass"]],
-["The Wright Brothers","People",["Our teamwork challenged a seemingly impossible ambition.","We experimented repeatedly rather than relying on one breakthrough.","Our earlier business involved bicycles.","Our historic success occurred at Kitty Hawk in 1903.","We were Orville and Wilbur, aviation pioneers."],["Wright brothers","Orville and Wilbur Wright"]],
-["The Colosseum","Place",["My original purpose differs from my modern one.","Crowds once gathered here to watch dramatic contests.","My building materials survived many centuries.","I am a massive ancient amphitheater in Rome.","I hosted gladiatorial spectacles in the Roman Empire."],["Colosseum","Flavian Amphitheatre"]],
-["The Smartphone","Object",["I compress many once-separate activities into one object.","I change how people experience distance and waiting.","I evolved from an older tool intended mainly for conversation.","My screen hosts apps, cameras, and internet services.","I am a pocket-sized mobile telephone and computer."],["Smartphone","Smart phone"]],
-["The Olympics","Event",["My modern identity draws from a much older tradition.","Participation often requires years of preparation for a brief appearance.","My symbolic flame travels before I begin.","Athletes compete for gold, silver, and bronze medals.","I am the international Summer and Winter Games."],["Olympic Games","Olympic Games"]],
-["Cleopatra","Person",["My story became inseparable from the ambitions of a larger power.","I was the last active ruler of a long-standing dynasty.","I ruled in a kingdom centered along the Nile.","My political alliances included Julius Caesar and Mark Antony.","I was the famous final Ptolemaic queen of Egypt."],["Cleopatra VII","Cleopatra VII Philopator"]],
-["The Northern Lights","Phenomenon",["I appear when distant activity reaches near home.","My forms and colors are never quite fixed.","My visibility is strongest at high latitudes.","Charged particles interact with Earth's magnetic field and atmosphere to create me.","I am also called the aurora borealis."],["Aurora Borealis","Aurora","Northern lights"]],
-["Chess","Object",["My complexity grows from a small collection of simple rules.","My origins developed over centuries across cultures.","My contests reward planning more than physical speed.","My pieces include knights, bishops, rooks, and pawns.","I am played on a board of 64 alternating squares."],["Chess game"]],
-["The Statue of Liberty","Place",["My meaning has changed for different arrivals.","I crossed an ocean before reaching my permanent home.","I was a gift marking friendship between two nations.","I stand on an island in New York Harbor.","I hold a torch and wear a crown with seven rays."],["Lady Liberty","Statue of Liberty"]],
-["Albert Einstein","Person",["My curiosity led me to question something most people treated as fixed.","My early professional life included evaluating other people's inventions.","Some of my ideas changed the relationship between space and time.","I received a Nobel Prize for explaining the photoelectric effect.","My name is synonymous with the theory of relativity."],["Einstein"]]
-];
+const raw=[];
 const allRaw=[...raw,...(window.CLUE5_ADDITIONS||[])];
 const normalizedAnswer=s=>s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const uniqueRaw=allRaw.filter((r,i,a)=>a.findIndex(q=>normalizedAnswer(q[0])===normalizedAnswer(r[0]))===i);
@@ -245,52 +203,87 @@ for(const c of cases.slice(25)){
   const fifthKey=normalizedAnswer(c.clues[4]);
   if(answerKey.length>=5 && fifthKey.includes(answerKey))c.clues[4]=solutionHint(c.answer);
 }
-const CASE_COUNT=cases.length;
+const CASE_COUNT=cases.length+730;
 const $=id=>document.getElementById(id), key="clue-five-v1",load=()=>{try{return JSON.parse(localStorage.getItem(key))||{daily:{},practice:0}}catch{return {daily:{},practice:0}}},store=()=>{try{localStorage.setItem(key,JSON.stringify(data))}catch{}};let data=load(),state=null;const dateKey=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 const legacyCaseIndex=()=>{let s=dateKey().replace(/\D/g,"");let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h%cases.length};
-// A frozen, publicly shared order keeps the same daily case across devices.
-// Unlike a date hash over the growing library, added cases cannot reshuffle future dates.
-const dailyRotation=window.CLUE5_DAILY_ROTATION||{start:"2026-11-15",answers:[]};
-const findCase=name=>cases.find(c=>normalizedAnswer(c.answer)===normalizedAnswer(name));
+// Practice cases are intentionally a separate pool; reserved daily cases are
+// selected, checked and revealed only by the private daily API.
+const practiceCases=cases;
+const practiceCaseIds=new Set(cases.map(c=>c.id));
 const dayOrdinal=value=>{const parts=value.split("-").map(Number);return Math.floor(Date.UTC(parts[0],parts[1]-1,parts[2])/86400000)};
-const dailyOffset=day=>dayOrdinal(day)-dayOrdinal(dailyRotation.start);
-const reservedDailyKeys=new Set(dailyRotation.answers.map(normalizedAnswer));
-const scheduleForDay=day=>{
- const offset=dailyOffset(day);
- if(offset<0||!dailyRotation.answers.length)return null;
- // The daily-only selection repeats its own pool after the frozen schedule.
- // Practice NEVER offers any of these reserved cases, including after a cycle.
- return findCase(dailyRotation.answers[offset%dailyRotation.answers.length])||null;
-};
-const practiceCases=cases.filter(c=>!reservedDailyKeys.has(normalizedAnswer(c.answer)));
-const practiceCaseIds=new Set(practiceCases.map(c=>c.id));
-const caseIndex=()=>{const planned=scheduleForDay(dateKey());return planned?cases.indexOf(planned):legacyCaseIndex()};
+const DAILY_RESERVED_COUNT=730;
+if(data.practiceSchema!==2){data.practiceSchema=2;data.practiceSeen=[];store();}
 const view=v=>{for(const id of ["home","game","stats"])$(id).classList.toggle("hidden",id!==v);window.scrollTo(0,0)};const norm=normalizedAnswer;
 function distanceAtMost(a,b,max){if(Math.abs(a.length-b.length)>max)return false;let row=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){let next=[i];let low=next[0];for(let j=1;j<=b.length;j++){next[j]=Math.min(next[j-1]+1,row[j]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));if(next[j]<low)low=next[j]}if(low>max)return false;row=next}return row[b.length]<=max}
 const matchingCandidates=c=>{const arr=[c.answer,...c.aliases];const plain=c.answer.replace(/^(the|a|an)\s+/i,"");if(plain!==c.answer)arr.push(plain);if(c.category==="People"||c.category==="Person"){const tokens=c.answer.split(/\s+/);if(tokens.length>=2){const last=tokens[tokens.length-1];if(last.length>=5){const others=cases.some(x=>x.id!==c.id&&((x.category==="People"||x.category==="Person")&&x.answer.split(/\s+/).slice(-1)[0].toLowerCase()===last.toLowerCase()));if(!others)arr.push(last)}if(tokens[0].length>=5&&["Cleopatra","Napoleon","Madonna","Beyoncé","Rihanna"].includes(tokens[0]))arr.push(tokens[0])}}return [...new Set(arr.map(norm))].filter(Boolean)};
-function isCorrect(text,c){const q=norm(text);if(!q)return false;const choices=matchingCandidates(c);if(choices.includes(q))return true;if(q.length<6)return false;return choices.some(a=>{const cap=a.length>=11&&q.length>=11?2:1;return distanceAtMost(q,a,cap)})}function save(){if(!state)return;if(state.daily){data.daily[state.day]={id:state.c.id,answer:state.c.answer,clue:state.clue,used:state.used,done:state.done,won:state.won,score:state.score};}else if(state.done&&!state.saved){data.practice=(data.practice||0)+1;state.saved=true}store()}
-function start(daily){const day=dateKey(),old=daily?data.daily[day]:null;
-let idx;
-if(daily){
-  // Prefer saved answer (stable across library growth); support existing saved IDs.
-  const savedCase=old?.answer?findCase(old.answer):old?.id?cases.find(x=>x.id===old.id):null;
-  idx=savedCase?cases.indexOf(savedCase):caseIndex();
-}else{
-  const seen=new Set((data.practiceSeen||[]).filter(id=>practiceCaseIds.has(id)));
-  // Never sample the 730 daily-only mysteries, even after exhausting practice.
-  const todaysSaved=data.daily[day];
-  const todayCase=todaysSaved?.answer?findCase(todaysSaved.answer):todaysSaved?.id?cases.find(x=>x.id===todaysSaved.id):scheduleForDay(day)||cases[legacyCaseIndex()];
-  const eligiblePractice=practiceCases.filter(x=>x.id!==todayCase?.id);
-  let pool=eligiblePractice.filter(x=>!seen.has(x.id)&&x.id!==state?.c?.id);
-  if(!pool.length){seen.clear();pool=eligiblePractice.filter(x=>x.id!==state?.c?.id);}
-  if(!pool.length)pool=eligiblePractice;
-  if(!pool.length){$("dailyStatus").textContent="No practice cases are available right now.";view("home");return;}
-  const chosen=pool[Math.floor(Math.random()*pool.length)];
-  idx=cases.indexOf(chosen);
-  data.practiceSeen=[...seen,chosen.id];
-  store();
+function isCorrect(text,c){const q=norm(text);if(!q)return false;const choices=matchingCandidates(c);if(choices.includes(q))return true;if(q.length<6)return false;return choices.some(a=>{const cap=a.length>=11&&q.length>=11?2:1;return distanceAtMost(q,a,cap)})}function save(){
+ if(!state)return;
+ if(state.daily){
+   data.dailySessions=data.dailySessions||{};
+   if(state.token)data.dailySessions[state.day]=state.token;
+   // Preserve previous history while never persisting the secret answer early.
+   data.daily[state.day]={answer:state.done?state.c.answer:null,clue:state.clue,used:state.used,done:state.done,won:state.won,score:state.score};
+ }else if(state.done&&!state.saved){data.practice=(data.practice||0)+1;state.saved=true;}
+ store();
 }
-const c=cases[idx];state={c,day,daily,clue:old?.clue||1,used:old?.used||0,done:old?.done||false,won:old?.won||false,score:old?.score||0,saved:false};$("mode").textContent=daily?"DAILY CASE":"PRACTICE CASE";$("category").textContent="CASE #"+String(c.id).padStart(3,"0")+" · "+c.category.toUpperCase();$("guess").value="";if(daily&&!old)save();render();view("game")}
+async function dailyFetch(action,extra={}){
+ const day=dateKey();
+ const token=data.dailySessions?.[day];
+ const isOpen=action==='open';
+ const body=isOpen&&token?{action:'restore',token}:!isOpen?{action,token,...extra}:null;
+ let response=await fetch('/api/daily',{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'});
+ if(isOpen&&!response.ok&&token){
+   // A stale session from an older deployment must not make daily play inaccessible.
+   response=await fetch('/api/daily',{cache:'no-store'});
+ }
+ const payload=await response.json();
+ if(!response.ok)throw Error(payload.error||'Could not contact the daily case server');
+ return payload;
+}
+function updateDaily(payload){
+ const previous=state&&state.daily?state:null;
+ state={c:{id:'DAILY',answer:payload.answer||'',category:payload.category,clues:payload.clues},day:payload.day,daily:true,remote:true,token:payload.token,clue:payload.clue,used:payload.used,done:payload.done,won:payload.won,score:payload.score,saved:false};
+ $('mode').textContent='DAILY CASE';
+ $('category').textContent='DAILY DOSSIER · '+payload.category.toUpperCase();
+ $('guess').value='';
+ save();render();dailyStatus();
+}
+async function playDaily(action,extra={}){
+ if(!state?.daily||state.done)return;
+ const oldUsed=state.used;
+ const controls=[$('reveal'),$('giveup'),$('guessForm').querySelector('button')];
+ controls.forEach(b=>b.disabled=true);
+ try{
+   const result=await dailyFetch(action,extra);
+   updateDaily(result);
+   if(action==='guess'&&!result.won&&result.used>oldUsed&&!result.done)$('notice').textContent='Incorrect. '+(6-result.used)+' guesses remaining.';
+ }catch(error){$('notice').textContent=error.message;}
+ finally{controls.forEach(b=>b.disabled=false);if(state?.done)$('guessForm').classList.add('hidden');}
+}
+async function start(daily){
+ const day=dateKey();
+ if(daily){
+  $('daily').disabled=true;
+  try{
+   const payload=await dailyFetch('open');
+   updateDaily(payload);
+   view('game');
+  }catch(error){$('dailyStatus').textContent='Daily mystery unavailable: '+error.message;view('home');}
+  finally{$('daily').disabled=false;}
+  return;
+ }
+ const seen=new Set((data.practiceSeen||[]).filter(id=>practiceCaseIds.has(id)));
+ let pool=practiceCases.filter(x=>!seen.has(x.id)&&x.id!==state?.c?.id);
+ if(!pool.length){seen.clear();pool=practiceCases.filter(x=>x.id!==state?.c?.id);}
+ if(!pool.length)pool=practiceCases;
+ if(!pool.length){$('dailyStatus').textContent='No practice cases are available right now.';view('home');return;}
+ const chosen=pool[Math.floor(Math.random()*pool.length)];
+ data.practiceSeen=[...seen,chosen.id];store();
+ state={c:chosen,day,daily:false,remote:false,clue:1,used:0,done:false,won:false,score:0,saved:false};
+ $('mode').textContent='PRACTICE CASE';
+ $('category').textContent='CASE #'+String(chosen.id).padStart(3,'0')+' · '+chosen.category.toUpperCase();
+ $('guess').value='';render();view('game');
+}
 function render(){if(!state)return;const s=state;$("count").textContent=String(s.clue).padStart(2,"0")+" / 05";$("steps").innerHTML=Array.from({length:5},(_,i)=>'<div class="step '+(i<s.clue?'on':'')+'">'+(i+1)+'</div>').join("");$("evidence").innerHTML=s.c.clues.slice(0,s.clue).map((e,i)=>'<div class="evidence"><small>EVIDENCE '+(i+1)+'</small><p></p></div>').join("");[...$("evidence").querySelectorAll("p")].forEach((p,i)=>p.textContent=s.c.clues[i]);$("dots").innerHTML=Array.from({length:6},(_,i)=>'<div class="dot '+(i<s.used?'off':'')+'"></div>').join("");$("remaining").textContent=6-s.used;$("potential").textContent=120-s.clue*20;$("guessForm").classList.toggle("hidden",s.done);$("actions").classList.toggle("hidden",s.done);$("reveal").disabled=s.clue===5;$("outcome").classList.toggle("hidden",!s.done);$("notice").textContent="";if(s.done){const o=$("outcome");o.replaceChildren();let label=document.createElement("div");label.className="eyebrow";label.textContent=s.won?"CASE SOLVED":"CASE CLOSED";let h=document.createElement("h3");h.textContent=s.c.answer;let p=document.createElement("p");p.textContent=s.won?"Excellent deduction! "+s.score+" points earned using "+s.clue+" clue(s) and "+s.used+" incorrect guess(es).":"The mystery has been revealed. Score: 0.";let b=document.createElement("button");b.className="btn outline";b.textContent="PLAY ANOTHER PRACTICE CASE ↗";b.onclick=()=>start(false);const stamp=document.createElement("div");stamp.className="result-stamp";stamp.textContent=s.won?"CASE SOLVED":"CASE CLOSED";const rank=document.createElement("div");rank.className="rank-line";rank.textContent=s.won?(s.clue===1?"✦ LEGENDARY DETECTIVE":s.clue===2?"✦ MASTER DETECTIVE":s.clue===3?"✦ SENIOR INVESTIGATOR":s.clue===4?"✦ DETECTIVE":"✦ ROOKIE DETECTIVE"):"✦ UNSOLVED CASE";o.append(stamp,label,rank,h,p,b);$("shareWrap").classList.remove("hidden");$("shareStatus").textContent=""}else{$("shareWrap").classList.add("hidden")}}function finish(won){state.done=true;state.won=won;state.score=won?120-state.clue*20:0;save();render();dailyStatus()}
 $("guessForm").onsubmit=e=>{e.preventDefault();if(!state||state.done)return;const text=$("guess").value.trim();if(!text)return;if(isCorrect(text,state.c)){finish(true)}else{state.used++;$("guess").value="";if(state.used>=6)finish(false);else{$("notice").textContent="Not quite. "+(6-state.used)+" guesses remaining.";save();render();$("notice").textContent="Incorrect. "+(6-state.used)+" guesses remaining."}}};
 $("reveal").onclick=()=>{if(state&&!state.done&&state.clue<5){state.clue++;save();render()}};$("shareResult").onclick=async()=>{if(!state?.done)return;const s=state;const icons=Array.from({length:5},(_,i)=>i<s.clue?(s.won&&i===s.clue-1?"🟩":"🟨"):"⬛").join("");const label=s.daily?"Daily":"Practice";const report="Clue5 "+label+" • "+s.day+"\n"+icons+"\n"+(s.won?"Solved on clue "+s.clue+" • "+s.score+" pts":"Unsolved")+" • "+s.used+"/6 wrong guesses\nhttps://clue-five-wheat.vercel.app";try{await navigator.clipboard.writeText(report);$("shareStatus").textContent="Copied! Share without spoilers."}catch{$("shareStatus").textContent=report}};$("giveup").onclick=()=>{if(state&&!state.done&&confirm("Close this case and reveal the answer?"))finish(false)};$("homeLink").onclick=$("back").onclick=$("statsBack").onclick=()=>{dailyStatus();view("home")};$("daily").onclick=()=>start(true);$("practice").onclick=()=>start(false);$("statsButton").onclick=()=>{const arr=Object.values(data.daily||{}),solved=arr.filter(x=>x.won);const total=solved.reduce((n,x)=>n+x.score,0);let last=0;for(let d=new Date();last<366;d.setDate(d.getDate()-1)){let key=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);let r=data.daily[key];if(r?.won)last++;else if(last===0&&!r)continue;else break}const vals=[["Daily cases",arr.length],["Daily wins",solved.length],["Daily points",total],["Practice cases",data.practice||0],["Avg clues",solved.length?(solved.reduce((a,x)=>a+x.clue,0)/solved.length).toFixed(1):"—"],["Recent streak",last]];$("statgrid").innerHTML=vals.map(([name,value])=>'<div class="statitem"><b>'+value+'</b><span>'+name+'</span></div>').join("");view("stats")};$("reset").onclick=()=>{if(confirm("Erase all Clue5 data saved on this browser?")){data={daily:{},practice:0,practiceSeen:[]};store();dailyStatus();view("home")}};function dailyStatus(){const d=data.daily[dateKey()];$("dailyStatus").textContent=d?.done?(d.won?"Solved today · "+d.score+" points":"Today's case completed · Come back tomorrow"):d?"Case in progress · Continue anytime":"New mystery every day at midnight Central";$("daily").textContent=d?.done?"VIEW TODAY'S RESULTS ↗":d?"CONTINUE TODAY'S CASE ↗":"OPEN TODAY'S CASE ↗"}dailyStatus();document.getElementById("archiveCount").textContent=practiceCases.length+" spoiler-free practice mysteries · "+CASE_COUNT+" total cases";document.getElementById("heroDaily").onclick=()=>start(true);
