@@ -7,7 +7,7 @@ const n=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f
 const signed=s=>crypto.createHmac('sha256',secret).update(s).digest();
 const dateKey=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const ordinal=s=>{const [y,m,d]=s.split('-').map(Number);return Math.floor(Date.UTC(y,m-1,d)/86400000)};
-const categories=[...new Set(cases.map(c=>c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1]))].filter(g=>cases.filter(c=>(c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1])===g).length>=5);
+const categories=[...new Set(cases.map(c=>c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1]))];
 function schedule(){
  const buckets=Object.fromEntries(categories.map(g=>[g,[]]));
  for(const c of cases){let g=c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1];if(buckets[g])buckets[g].push(c);}
