@@ -35,10 +35,65 @@ body{background:radial-gradient(ellipse at 50% 0,#302117 0,transparent 46%),#0c0
 .hero .hero-sub{margin-top:16px;font-size:12px}
 @media(max-width:900px){.hero .hero-content{flex-basis:500px;max-width:500px}.hero h1{font-size:clamp(41px,6vw,64px)}}
 @media(max-width:620px){.hero{display:flex;align-items:flex-start;justify-content:flex-start;min-height:590px}.hero .hero-content{flex:1 1 auto;max-width:100%}.hero h1{font-size:clamp(36px,10vw,48px)}.hero p{font-size:16px}.hero .hero-cta{width:100%;font-size:18px}.hero .hero-sub{font-size:10px;letter-spacing:.15em}}
+</style><style id="clue5-game-style">
+#game{max-width:1350px;margin:auto}
+#game .bar{margin-bottom:18px}
+#game .bar .linkbtn{color:#ecc68d;text-decoration:none;border-bottom:1px solid #ad8752}
+#game .case-intro{text-align:center;padding:6px 8px 25px}
+#game .case-intro h2{font:normal clamp(32px,4vw,49px)/1.2 Georgia,serif;margin:7px 0;color:#fae7c6}
+#game .case-intro p{font-size:14px;color:#c4a98a;margin:0}
+#game .game-scene{padding:28px;border:1px solid #785131;box-shadow:0 18px 55px #0009;background:linear-gradient(120deg,#16120fdc,#17120fe8),url('/assets/noir-office.svg') center/cover}
+#game .layout{grid-template-columns:minmax(0,1fr) 277px;gap:24px;align-items:start}
+#game .paper{color:#f2e1c4;position:relative;padding:30px;border:10px solid #241710;outline:2px solid #96643b;outline-offset:-5px;background:radial-gradient(ellipse at 90% 0%,#98653a66,transparent 65%),repeating-linear-gradient(15deg,transparent 0 25px,#d0a46e10 26px),#4b3020;box-shadow:0 15px 35px #000b}
+#game .file-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:27px}
+#game .file-heading .eyebrow,#game .evidence-title .eyebrow{color:#eec38c}
+#game .file-heading h2{font:normal clamp(31px,3.5vw,46px) Georgia,serif;margin:5px 0;color:#fff0d5}
+#game .case-stamp{transform:rotate(6deg);color:#d88f71;border:3px double #bf7355;font:bold 11px Georgia,serif;letter-spacing:.1em;text-align:center;padding:7px}
+#game .case-stamp small{display:block;font-size:9px;letter-spacing:.13em}
+#game .evidence-title{display:flex;justify-content:space-between;gap:12px;border-top:1px solid #c39b68;padding-top:21px}
+#game .steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:17px 0 19px}
+#game .step{font:20px Georgia,serif;background:#261c18;color:#bda482;border:1px solid #946842;padding:12px 3px;position:relative}
+#game .step.on{background:#8c5b35;color:#fff1db;border-color:#edbd7c}
+#game .step.on:after{content:"◆";position:absolute;top:-12px;left:calc(50% - 5px);color:#c5422c;font-size:12px}
+#game #evidence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+#game .evidence{background:linear-gradient(145deg,#f4e6c8,#d7bd94);color:#37271d;border:1px solid #ae8b63;border-left:0;padding:22px 20px 20px;margin:0;min-height:140px;box-shadow:4px 6px 10px #150d0b8a;position:relative}
+#game .evidence:before{content:"";position:absolute;left:50%;top:6px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#e57e58,#9a2319 65%);box-shadow:1px 2px 3px #0009}
+#game .evidence:first-child:last-child{grid-column:1/-1;min-height:135px}
+#game .evidence small{font:bold 11px system-ui;letter-spacing:.19em;color:#98512e}
+#game .evidence p{font:normal clamp(18px,2vw,23px)/1.45 Georgia,serif;color:#35251c;margin:13px 0 0;overflow-wrap:anywhere}
+#game .notice{min-height:17px;color:#ffcd9c;font-size:14px;margin-top:14px}
+#game .deduction-desk{background:linear-gradient(145deg,#241b17,#34231b);padding:22px;border:1px solid #a77a48;box-shadow:inset 0 0 0 3px #211710;margin-top:12px}
+#game #guessForm label{color:#eac38f}
+#game #guessForm .row{margin:10px 0 13px}
+#game #guessForm input{background:#fff1d8;color:#291b15;border:2px solid #b48e5d;min-height:49px}
+#game #guessForm .btn{white-space:nowrap}
+#game .btn{background:linear-gradient(#aa4233,#6e241b);border:1px solid #df956b;color:#fff0dc;min-height:46px}
+#game .btn.outline{background:#221b19;border-color:#bc8c51;color:#f6d29f}
+#game #giveup{color:#e9c48e;text-underline-offset:4px;font-size:13px}
+#game .side{display:block;padding:0;background:linear-gradient(145deg,#2c211c,#141215);border:1px solid #b0834e;box-shadow:0 14px 25px #0009}
+#game .side-header{padding:25px 22px 20px;border-bottom:1px solid #6b4e35}
+#game .side h3{font:normal 24px Georgia,serif;color:#f4dfbc;margin:9px 0 0}
+#game .side-section{padding:24px 22px;border-bottom:1px solid #644d38}
+#game .side .eyebrow{color:#d8ab76}
+#game .dots{gap:7px;margin:15px 0}
+#game .dot{width:28px;height:28px;background:#bd8e51;border-color:#dab27a}
+#game .dot.off{background:#332a23;border-color:#69513d}
+#game .side .counter{font:normal 58px Georgia,serif;line-height:1.1;margin:14px 0;color:#efc184}
+#game .side .counter small{font-size:23px;color:#a88b67}
+#game .side .points{font:normal 64px Georgia,serif;color:#efc184;line-height:1.2;margin:12px 0}
+#game .side .small{font-size:13px;line-height:1.55;color:#c9b193}
+#game .side-footer{color:#a58b69;font-size:11px;letter-spacing:.13em;padding:22px 8px;text-align:center}
+#game .outcome{background:#edddbe;color:#3b291e;border:2px solid #bd955c}
+#game .outcome h3{color:#412a18;font-size:28px}
+#game .outcome .eyebrow{color:#8e5136}
+#game .outcome p{color:#59432f}
+@media(max-width:1050px){#game .game-scene{padding:16px}#game .layout{grid-template-columns:minmax(0,1fr) 228px;gap:15px}#game .paper{padding:23px 19px}#game .side-section,#game .side-header{padding:18px 14px}#game .dot{width:23px;height:23px}}
+@media(max-width:760px){#game .layout{grid-template-columns:1fr}#game .side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#game .side-header,#game .side-footer{grid-column:1/-1}#game .case-intro{padding-bottom:18px}}
+@media(max-width:520px){#game .game-scene{padding:8px}#game .paper{padding:20px 13px;border-width:7px}#game .file-heading h2{font-size:30px}#game .case-stamp{font-size:9px}#game .steps{gap:5px}#game .step{padding:9px 3px;font-size:16px}#game #evidence{grid-template-columns:1fr;gap:11px}#game .evidence:first-child:last-child{grid-column:auto}#game .evidence{min-height:0;padding:22px 16px 17px}#game .deduction-desk{padding:15px 12px}#game #guessForm .row{flex-direction:column}#game #guessForm .btn{width:100%}#game .side-section{padding:15px 12px}#game .dots{gap:4px}#game .dot{width:19px;height:19px}#game .side .counter{font-size:46px}#game .side .points{font-size:48px}#game .side .small{font-size:11px}}
 </style></head><body>
 <header class="top"><button class="brand" id="homeLink">◈ CLUE<b>5</b></button><button class="mini" id="statsButton">◫ Statistics</button></header>
 <main class="wrap"><section id="home"><div class="hero"><div class="hero-content"><div class="eyebrow">The detective's desk · Case files are open</div><h1>FIVE CLUES.<br><em>ONE MYSTERY.</em></h1><p>Trust your instincts. Follow the evidence.<br>Every clue brings you closer to the truth.</p><div class="chips"><span>◈ Five clues</span><span>⌖ Six guesses</span><span>✧ New daily case</span></div><button class="hero-cta" id="heroDaily">START DAILY CASE →</button><div class="hero-sub">▦ A NEW MYSTERY EVERY DAY</div></div></div><div class="cards"><article class="card"><div class="eyebrow">The official investigation</div><h2>Daily Mystery</h2><p>One shared mystery each day. Solve it in fewer clues to earn more points and protect your streak.</p><button class="btn" id="daily">OPEN TODAY'S CASE ↗</button><div class="small" id="dailyStatus"></div></article><article class="card"><div class="eyebrow">The investigation never ends</div><h2>Unlimited Practice</h2><p>Explore the case archive. Hone your deductions across science, history, sports, geography, and more.</p><button class="btn outline" id="practice">ENTER CASE ARCHIVES ↗</button><div class="small">Practice without affecting your daily streak.</div></article></div><div class="rules"><article><strong>01 · Examine evidence</strong><p>Clues start extremely vague and grow progressively easier.</p></article><article><strong>02 · Make your accusation</strong><p>Six guesses per case. Revealing another clue is free.</p></article><article><strong>03 · Crack the case</strong><p>The earlier you solve, the higher your score.</p></article></div></section>
-<section id="game" class="hidden"><div class="bar"><button class="linkbtn" id="back">← Detective's Desk</button><span class="eyebrow" id="mode"></span></div><div class="layout"><article class="paper"><div class="eyebrow" id="category"></div><h2>The Unknown</h2><div class="rule"></div><div class="eyebrow">Evidence revealed <span id="count"></span></div><div class="steps" id="steps"></div><div id="evidence"></div><div id="notice" class="notice" role="status"></div><form id="guessForm"><label for="guess">YOUR ACCUSATION</label><div class="row"><input id="guess" required autocomplete="off" maxlength="80" placeholder="Enter your answer..."><button class="btn">SUBMIT ↗</button></div></form><div id="actions" class="actions"><button id="reveal" type="button" class="btn outline">REVEAL NEXT CLUE ↓</button><button id="giveup" type="button" class="linkbtn">Close case and reveal answer</button></div><div id="outcome" class="outcome hidden"></div></article><aside class="side"><div><div class="eyebrow">Investigation status</div><h3>Guesses remaining</h3><div id="dots" class="dots"></div><div class="counter"><span id="remaining">6</span><small>/6</small></div></div><div><h3>Potential score</h3><div class="points" id="potential">100</div><div class="small">Reveal clues freely. Wrong guesses do not directly reduce points.</div></div></aside></div></section>
+<section id="game" class="hidden"><div class="bar"><button class="linkbtn" id="back">← Detective's Desk</button><span class="eyebrow" id="mode"></span></div><div class="case-intro"><div class="eyebrow">◈ CONFIDENTIAL INVESTIGATION</div><h2>Follow the evidence.</h2><p>Five clues. Six chances. One mystery to uncover.</p></div><div class="game-scene"><div class="layout"><article class="paper"><div class="file-heading"><div><div class="eyebrow" id="category"></div><h2>The Unknown</h2></div><div class="case-stamp">TOP SECRET<small>CASE OPEN</small></div></div><div class="evidence-title"><span class="eyebrow">THE EVIDENCE BOARD</span><span class="eyebrow" id="count"></span></div><div class="steps" id="steps"></div><div id="evidence"></div><div id="notice" class="notice" role="status"></div><div class="deduction-desk"><form id="guessForm"><label for="guess">YOUR DEDUCTION</label><div class="row"><input id="guess" required autocomplete="off" maxlength="80" placeholder="Who or what could it be?"><button class="btn">SUBMIT GUESS ↗</button></div></form><div id="actions" class="actions"><button id="reveal" type="button" class="btn outline">REVEAL NEXT CLUE ↓</button><button id="giveup" type="button" class="linkbtn">Close case and reveal answer</button></div><div id="outcome" class="outcome hidden"></div></div></article><aside class="side"><div class="side-header"><div class="eyebrow">◈ DETECTIVE'S NOTEBOOK</div><h3>Investigation status</h3></div><div class="side-section"><div class="eyebrow">GUESSES REMAINING</div><div id="dots" class="dots"></div><div class="counter"><span id="remaining">6</span><small>/6</small></div><div class="small">Incorrect guesses use an attempt.</div></div><div class="side-section"><div class="eyebrow">AVAILABLE POINTS</div><div class="points" id="potential">100</div><div class="small">Reveal clues freely. Earlier solves earn more points.</div></div><div class="side-footer">✦ EVERY DETAIL MATTERS</div></aside></div></div></section>
 <section id="stats" class="hidden"><button id="statsBack" class="linkbtn">← Detective's Desk</button><div class="stats"><div class="eyebrow">Detective personnel file</div><h2>Your Statistics</h2><p class="small">Records are saved in this browser only.</p><div class="statgrid" id="statgrid"></div><button id="reset" class="linkbtn">Clear saved records</button></div></section></main><footer>CLUE5 ◈ EVERY MYSTERY HAS AN ANSWER</footer>
 <script>
 const raw=[
