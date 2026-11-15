@@ -6,7 +6,7 @@
       "dest": "/api/blocked"
     },
     {
-      "src": "/data/daily-rotation\\.js",
+      "src": "/data/(?!practice\\\\.js$).*",
       "dest": "/api/blocked"
     },
     {
