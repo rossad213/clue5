@@ -279,7 +279,8 @@ function isCorrect(text,c){const q=norm(text);if(!q)return false;const choices=m
    data.dailySessions=data.dailySessions||{};
    if(state.token)data.dailySessions[state.day]=state.token;
    // Preserve previous history while never persisting the secret answer early.
-   data.daily[state.day]={answer:state.done?state.c.answer:null,clue:state.clue,used:state.used,done:state.done,won:state.won,score:state.score};
+   const previousRecord=data.daily[state.day]||{};
+   data.daily[state.day]={...previousRecord,answer:state.done?state.c.answer:null,clue:state.clue,used:state.used,done:state.done,won:state.won,score:state.score,category:state.c.category||previousRecord.category||null,cluesShown:state.c.clues?.slice(0,state.clue)||previousRecord.cluesShown||[]};
  }else if(state.done&&!state.saved){data.practice=(data.practice||0)+1;state.saved=true;}
  store();
 }
@@ -312,6 +313,12 @@ async function playDaily(action,extra={}){
  controls.forEach(b=>b.disabled=true);
  try{
    const result=await dailyFetch(action,extra);
+   const events=data.daily[result.day]?.events||[];
+   let event=null;
+   if(action==='guess')event={kind:'guess',value:String(extra.guess||'').slice(0,80),correct:!!result.won,clue:state.clue};
+   else if(action==='reveal'&&result.clue>state.clue)event={kind:'clue',index:result.clue,text:result.clues[result.clue-1]||''};
+   else if(action==='giveup')event={kind:'giveup'};
+   if(event){data.daily[result.day]={...(data.daily[result.day]||{}),events:[...events,event]};}
    updateDaily(result);
    if(action==='guess'&&!result.won&&result.used>oldUsed&&!result.done)$('notice').textContent='Incorrect. '+(6-result.used)+' guesses remaining.';
  }catch(error){$('notice').textContent=error.message;}
@@ -322,7 +329,7 @@ async function start(daily){
  if(daily){
   const legacy=data.daily?.[day];
   if(legacy?.done&&!data.dailySessions?.[day]){
-    state={c:{answer:legacy.answer||'Previously completed case',clues:[]},day,daily:true,remote:false,legacy:true,clue:legacy.clue||1,used:legacy.used||0,done:true,won:!!legacy.won,score:legacy.score||0,saved:true};
+    state={c:{answer:legacy.answer||'Previously completed case',clues:legacy.cluesShown||[]},day,daily:true,remote:false,legacy:true,clue:legacy.clue||1,used:legacy.used||0,done:true,won:!!legacy.won,score:legacy.score||0,saved:true};
     $('mode').textContent='DAILY CASE · SAVED RESULT';$('category').textContent='PREVIOUSLY COMPLETED DOSSIER';
     render();view('game');return;
   }
