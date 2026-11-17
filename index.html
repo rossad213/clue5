@@ -520,7 +520,15 @@ $("progressFile").onchange=async()=>{
   const saved=backup.data;const nextDaily=Object.assign({},data.daily||{});
   for(const [day,record] of Object.entries(saved.daily||{})){
     if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!record||typeof record!=='object')continue;
-    nextDaily[day]={answer:typeof record.answer==='string'?record.answer.slice(0,100):null,clue:Math.min(5,Math.max(1,Number(record.clue)||1)),used:Math.min(6,Math.max(0,Number(record.used)||0)),done:!!record.done,won:!!record.won,score:Math.min(100,Math.max(0,Number(record.score)||0))};
+    nextDaily[day]={
+    answer:typeof record.answer==='string'?record.answer.slice(0,100):null,
+    category:typeof record.category==='string'?record.category.slice(0,80):null,
+    clue:Math.min(5,Math.max(1,Number(record.clue)||1)),
+    used:Math.min(6,Math.max(0,Number(record.used)||0)),
+    done:!!record.done,won:!!record.won,score:Math.min(100,Math.max(0,Number(record.score)||0)),
+    cluesShown:Array.isArray(record.cluesShown)?record.cluesShown.slice(0,5).filter(s=>typeof s==='string').map(s=>s.slice(0,400)):[],
+    events:Array.isArray(record.events)?record.events.slice(0,50).filter(e=>e&&['guess','clue','giveup'].includes(e.kind)).map(e=>({kind:e.kind,value:typeof e.value==='string'?e.value.slice(0,80):'',correct:!!e.correct,clue:Math.min(5,Math.max(1,Number(e.clue)||1)),index:Math.min(5,Math.max(1,Number(e.index)||1)),text:typeof e.text==='string'?e.text.slice(0,400):''})):[]
+   };
   }
   const nextTokens=Object.assign({},data.dailySessions||{});
   for(const [day,token] of Object.entries(saved.dailySessions||{})){
@@ -531,6 +539,7 @@ $("progressFile").onchange=async()=>{
   data.practiceSeen=Array.from(new Set([...(data.practiceSeen||[]),...(Array.isArray(saved.practiceSeen)?saved.practiceSeen:[])] )).filter(id=>Number.isInteger(id)&&practiceCaseIds.has(id));
   data.practiceSchema=2;store();dailyStatus();
   $('backupStatus').textContent='Records restored successfully. Open Statistics to review your history.';
+  renderHistoryCalendar();
  }catch(error){$('backupStatus').textContent='Could not restore records: '+error.message;}
 };
 $("reset").onclick=()=>{if(confirm("Erase all Clue5 data saved on this browser?")){data={daily:{},practice:0,practiceSeen:[]};store();dailyStatus();view("home")}};function dailyStatus(){const d=data.daily[dateKey()];$("dailyStatus").textContent=d?.done?(d.won?"Solved today · "+d.score+" points":"Today's case completed · Come back tomorrow"):d?"Case in progress · Continue anytime":"New mystery every day at midnight Central";$("daily").textContent=d?.done?"VIEW TODAY'S RESULTS ↗":d?"CONTINUE TODAY'S CASE ↗":"OPEN TODAY'S CASE ↗"}dailyStatus();document.getElementById("heroDaily").onclick=()=>start(true);
