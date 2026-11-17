@@ -1,5 +1,7 @@
 // Shared Discord Party Mode, backed by a dedicated Supabase table.
 // Authentication is verified with Discord on every request; no guesses or answers leak before case completion.
+import spoilerGuard from '../../assets/clue-safety.js';
+import answerAliases from '../../assets/answer-aliases.js';
 const MAIN='https://clue-five-wheat.vercel.app';
 let cached=null,loaded=0;
 const normalize=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
@@ -8,7 +10,7 @@ async function cases(){
  if(cached&&Date.now()-loaded<600000)return cached;
  const response=await fetch(MAIN+'/data/practice.js');if(!response.ok)throw Error('Practice archive unavailable');
  const src=await response.text(),i=src.indexOf('.concat(');if(i<0)throw Error('Practice format changed');
- cached=JSON.parse(src.slice(i+8).trim().replace(/\);\s*$/,'')).filter(c=>Array.isArray(c)&&typeof c[0]==='string'&&Array.isArray(c[2])&&c[2].length===5);loaded=Date.now();return cached;
+ cached=JSON.parse(src.slice(i+8).trim().replace(/\);\s*$/,'')).filter(c=>Array.isArray(c)&&typeof c[0]==='string'&&Array.isArray(c[2])&&c[2].length===5);cached=spoilerGuard.clean(cached,answerAliases);loaded=Date.now();return cached;
 }
 function config(){return process.env.DISCORD_CLIENT_ID&&process.env.DISCORD_BOT_TOKEN&&process.env.SUPABASE_URL&&process.env.SUPABASE_SERVICE_ROLE_KEY}
 function dbUrl(query){return process.env.SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/clue5_discord_rooms'+query}
@@ -46,7 +48,7 @@ export default async function handler(req,res){
  if(req.method!=='POST')return res.status(405).json({error:'POST required'});
  if(!config())return res.status(503).json({error:'Party Mode is not connected yet. Configure Discord credentials and a dedicated Supabase room database.'});
  const body=req.body||{},id=body.instanceId;
- if(typeof id!=='string'||!/^[-a-zA-Z0-9_]{8,128}$/.test(id)||!['join','state','guess','reveal','next'].includes(body.action))return res.status(400).json({error:'Invalid room request'});
+ if(typeof id!=='string'||!/^[-a-zA-Z0-9_]{8,128}$/.test(id)||!['join','state','guess','reveal','answer','next'].includes(body.action))return res.status(400).json({error:'Invalid room request'});
  try{
   const who=await checkIdentity(req,id);
   const pool=await cases();
@@ -87,6 +89,11 @@ export default async function handler(req,res){
      if(over)return res.status(409).json({error:'Round ended'});
      if(row.clue_count>=5)return res.status(409).json({error:'All clues revealed'});
      patch.clue_count=row.clue_count+1;
+    }else if(body.action==='answer'){
+     if(who.id!==row.host_id)return res.status(403).json({error:'Only the party host can reveal the answer'});
+     if(over)return res.status(409).json({error:'Round already ended'});
+     if(row.clue_count<5)return res.status(409).json({error:'Reveal all five clues first'});
+     patch.ended=true;
     }else if(body.action==='next'){
      if(who.id!==row.host_id)return res.status(403).json({error:'Only the party host can start a new round'});
      if(!over)return res.status(409).json({error:'Finish this case before starting the next round'});
