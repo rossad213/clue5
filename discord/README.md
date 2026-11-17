@@ -50,3 +50,11 @@ Separate Vercel project: clue5-discord (root directory: discord/). Existing Clue
 - To test private DMs with another user, install Clue5 to **your own Discord account** using the User Install authorization flow; the other person does not have to create or manage a server.
 - Confirm `/clue5` appears in both a 1-on-1 DM and a server channel, and that the Activity launches. It may take a short time for Discord to propagate the global command.
 - **Important:** Directly posting completed-game results into third-party DMs is not guaranteed by guild bot permissions. DM result delivery is a separate feature requiring DM-compatible authorization and verification; don't assume it works until independently tested.
+
+## Wordle-style automatic results in private DMs and servers
+- A finished Daily/Practice game publishes a compact spoiler-free score message with five colored squares, points, incorrect guesses, and a clickable `https://clue5.io` link. No manual sharing or image download.
+- Guild channels use an authenticated bot channel message. DMs and group DMs use a followup to the signed `/clue5` interaction; the Discord application does not attempt to have a bot impersonate a participant in someone else's private conversation.
+- Discord interaction followup tokens expire after 15 minutes. The dedicated Clue5 Supabase table `public.clue5_discord_launches` keeps the latest token private and short-lived; after the callback expires the game still saves the result but cannot post it in that conversation. Relaunch `/clue5` to obtain a fresh callback for a new case.
+- The callback is claimed once; no continuous polling or public exposure of the interaction token. Scores never include the puzzle answer.
+- The dedicated Supabase table is protected by RLS, revoked `anon`/`authenticated` grants, and server-only `service_role` access. Periodic cleanup of expired callback rows is recommended.
+- If posting fails, the Activity shows a warning instead of throwing away the result.
