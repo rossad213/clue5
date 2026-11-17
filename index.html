@@ -510,7 +510,7 @@ function badgeElement(item){
 }
 function shareText(s){
  const icons=Array.from({length:5},(_,i)=>i<s.clue?(s.won&&i===s.clue-1?'🟩':'🟨'):'⬛').join('');
- const label=s.daily?'Daily':'Practice';
+ const label=s.daily?(s.day!==dateKey()?'Archive Catch-up':'Daily'):'Practice';
  const rank=s.won?(['','LEGENDARY','MASTER','SENIOR','DETECTIVE','ROOKIE'][s.clue]):'UNSOLVED';
  return 'CLUE5 ◈ '+label+' • '+s.day+'\n'+icons+'\n'+(s.won?'CASE SOLVED • '+s.score+' points • '+rank:'CASE CLOSED • UNSOLVED')+'\n'+s.used+'/6 incorrect guesses\nPlay: https://clue5.io';
 }
