@@ -18,7 +18,7 @@ function schedule(){
  const quota=Object.fromEntries(categories.map(g=>[g,safeCases.length*buckets[g].length/safeCases.length]));
  const count=Object.fromEntries(categories.map(g=>[g,0]));
  const seq=[],recent=[];
- while(seq.length<safeCases.length{
+ while(seq.length<safeCases.length){
   let eligible=categories.filter(g=>count[g]<buckets[g].length&&!recent.slice(-4).includes(g));
   if(!eligible.length)eligible=categories.filter(g=>count[g]<buckets[g].length);
   eligible.sort((a,b)=>(count[a]+0.5)/quota[a]-(count[b]+0.5)/quota[b]||a.localeCompare(b));
