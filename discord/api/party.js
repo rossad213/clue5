@@ -1,7 +1,7 @@
 // Shared Discord Party Mode, backed by a dedicated Supabase table.
 // Authentication is verified with Discord on every request; no guesses or answers leak before case completion.
-import spoilerGuard from '../../assets/clue-safety.js';
-import answerAliases from '../../assets/answer-aliases.js';
+import spoilerGuard from '../lib/clue-safety.cjs';
+import answerAliases from '../lib/answer-aliases.cjs';
 const MAIN='https://clue-five-wheat.vercel.app';
 let cached=null,loaded=0;
 const normalize=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
