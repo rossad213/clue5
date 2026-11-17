@@ -16,7 +16,7 @@ function headers(prefer){return {'apikey':process.env.SUPABASE_SERVICE_ROLE_KEY,
 async function db(method,query,body,prefer){
  const r=await fetch(dbUrl(query),{method,headers:headers(prefer),body:body===undefined?undefined:JSON.stringify(body)});
  if(!r.ok)throw Error('Room storage error ('+r.status+')');
- return r.status===204?[]:r.json();
+ const raw=await r.text();return raw?JSON.parse(raw):[];
 }
 const query=id=>'?instance_id=eq.'+encodeURIComponent(id)+'&select=*';
 async function read(id){const rows=await db('GET',query(id));return rows[0]||null}
