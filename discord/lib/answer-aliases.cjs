@@ -1,5 +1,14 @@
 // Curated equivalent answers for daily and practice puzzles. Only add true aliases, not merely related concepts.
 const clue5AnswerAliases={
+  "2008 Financial Crisis": [
+    "great recession",
+    "the great recession",
+    "global financial crisis",
+    "the global financial crisis",
+    "2008 global financial crisis",
+    "financial crisis of 2008",
+    "2007-2008 financial crisis"
+  ],
   "Automobile": [
     "car",
     "auto",
