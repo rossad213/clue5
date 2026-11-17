@@ -112,16 +112,88 @@ function image(x){
   pixels[di+3]=255;
  }
  rect(370,110,3,320,[166,109,48]);
- draw('CLUE5',412,78,13,[255,243,218]);
- draw((x.daily?'DAILY':'PRACTICE')+'  '+x.day,413,192,6,[220,177,127]);
+
+
  const colors={yellow:[244,182,18],green:[25,178,48],black:[41,42,43]};
  for(let i=0;i<5;i++){
   let col=i>=x.clue?colors.black:x.won&&i===x.clue-1?colors.green:colors.yellow;
   rounded(413+i*103,265,85,78,12,[126,88,47]);rounded(417+i*103,269,77,70,10,col);
  }
- draw(x.won?'CASE SOLVED':'CASE CLOSED',412,392,8,[255,236,205]);
- draw(String(x.score)+' PTS  '+x.level,412,474,6,[255,196,75],750);
- draw(String(x.used)+'/6 INCORRECT GUESSES',412,525,5,[235,215,195],760);
+
+
+
+
+ // Smooth, proportional sans-serif lettering, using compact outline-inspired strokes.
+ // Draw at 3x resolution and downsample for anti-aliased text.
+ const FONT_LINES={
+ A:['M0 10 L5 0 L10 10','M2 6 L8 6'],
+ B:['M0 0 L0 10','M0 0 L6 0 Q10 0 10 2.5 Q10 5 6 5 L0 5','M0 5 L6 5 Q10 5 10 7.5 Q10 10 6 10 L0 10'],
+ C:['M10 1 Q0 -2 0 5 Q0 12 10 9'],
+ D:['M0 0 L0 10 L5 10 Q10 10 10 5 Q10 0 5 0 Z'],
+ E:['M10 0 L0 0 L0 10 L10 10','M0 5 L8 5'],
+ F:['M0 10 L0 0 L10 0','M0 5 L8 5'],
+ G:['M10 1 Q0 -2 0 5 Q0 12 10 9 L10 5 L6 5'],
+ H:['M0 0 L0 10','M10 0 L10 10','M0 5 L10 5'],
+ I:['M0 0 L8 0','M4 0 L4 10','M0 10 L8 10'],
+ J:['M10 0 L10 7 Q10 12 3 10 Q0 9 0 7'],
+ K:['M0 0 L0 10','M10 0 L0 5 L10 10'],
+ L:['M0 0 L0 10 L10 10'],
+ M:['M0 10 L0 0 L5 6 L10 0 L10 10'],
+ N:['M0 10 L0 0 L10 10 L10 0'],
+ O:['M5 0 Q10 0 10 5 Q10 10 5 10 Q0 10 0 5 Q0 0 5 0 Z'],
+ P:['M0 10 L0 0 L6 0 Q10 0 10 3 Q10 6 6 6 L0 6'],
+ Q:['M5 0 Q10 0 10 5 Q10 10 5 10 Q0 10 0 5 Q0 0 5 0 Z','M6 7 L11 11'],
+ R:['M0 10 L0 0 L6 0 Q10 0 10 3 Q10 6 6 6 L0 6','M6 6 L10 10'],
+ S:['M10 1 Q0 -2 0 3 Q0 5 5 5 Q10 5 10 7 Q10 12 0 9'],
+ T:['M0 0 L10 0','M5 0 L5 10'],
+ U:['M0 0 L0 7 Q0 10 5 10 Q10 10 10 7 L10 0'],
+ V:['M0 0 L5 10 L10 0'],
+ W:['M0 0 L2.5 10 L5 4 L7.5 10 L10 0'],
+ X:['M0 0 L10 10','M10 0 L0 10'],
+ Y:['M0 0 L5 5 L10 0','M5 5 L5 10'],
+ Z:['M0 0 L10 0 L0 10 L10 10'],
+ 0:['M5 0 Q10 0 10 5 Q10 10 5 10 Q0 10 0 5 Q0 0 5 0 Z'],
+ 1:['M1 2 L5 0 L5 10','M1 10 L9 10'],
+ 2:['M0 2 Q0 0 5 0 Q10 0 10 3 Q10 5 5 7 L0 10 L10 10'],
+ 3:['M0 1 Q10 -2 10 3 Q10 5 5 5 Q10 5 10 8 Q10 12 0 9'],
+ 4:['M8 10 L8 0 L0 7 L10 7'],
+ 5:['M10 0 L0 0 L0 5 Q10 3 10 7 Q10 12 0 9'],
+ 6:['M9 0 Q0 0 0 5 Q0 10 5 10 Q10 10 10 7 Q10 4 5 4 Q0 4 0 7'],
+ 7:['M0 0 L10 0 L3 10'],
+ 8:['M5 0 Q10 0 10 2.5 Q10 5 5 5 Q0 5 0 2.5 Q0 0 5 0 Z','M5 5 Q10 5 10 7.5 Q10 10 5 10 Q0 10 0 7.5 Q0 5 5 5 Z'],
+ 9:['M10 5 Q10 0 5 0 Q0 0 0 3 Q0 6 5 6 Q10 6 10 3','M10 4 Q10 10 2 10'],
+ '-':['M0 5 L7 5'],
+ '/':['M8 0 L0 10'],
+ '.':['M0 10 L1 10']
+ };
+ const parsePath=path=>{const t=path.match(/[MLQZ]|-?\\d+(?:\\.\\d+)?/g),segs=[];let i=0,x=0,y=0,startX=0,startY=0;while(i<t.length){const cmd=t[i++];if(cmd==='M'){x=Number(t[i++]);y=Number(t[i++]);startX=x;startY=y;}else if(cmd==='L'){let nx=Number(t[i++]),ny=Number(t[i++]);segs.push([x,y,nx,ny]);x=nx;y=ny;}else if(cmd==='Q'){let cx=Number(t[i++]),cy=Number(t[i++]),nx=Number(t[i++]),ny=Number(t[i++]);let px=x,py=y;for(let k=1;k<=12;k++){let a=k/12,b=1-a,tx=b*b*x+2*b*a*cx+a*a*nx,ty=b*b*y+2*b*a*cy+a*a*ny;segs.push([px,py,tx,ty]);px=tx;py=ty;}x=nx;y=ny;}else if(cmd==='Z'){segs.push([x,y,startX,startY]);x=startX;y=startY;}}return segs;};
+ const pathCache={};for(const [c,paths] of Object.entries(FONT_LINES))pathCache[c]=paths.flatMap(parsePath);
+ const softText=(str,x,y,size,color,maxWidth=760,weight=0.92)=>{
+  const unit=size/12,spacing=size*0.20,lineWidth=unit*weight,letterWidth=unit*10+spacing;
+  const text=String(str).toUpperCase();let advance=0;
+  for(const ch of text){
+   const cw=ch===' '?size*.38:ch==='I'||ch==='1'?size*.47:ch==='.'?size*.24:ch==='/'?size*.65:ch==='-'?size*.65:letterWidth;
+   if(advance+cw>maxWidth)break;
+   const segs=pathCache[ch]||[];
+   if(segs.length){
+    const minX=Math.max(0,Math.floor(x+advance-lineWidth)),maxX=Math.min(W,Math.ceil(x+advance+10*unit+lineWidth));
+    const minY=Math.max(0,Math.floor(y-lineWidth)),maxY=Math.min(H,Math.ceil(y+10*unit+lineWidth));
+    for(let yy=minY;yy<maxY;yy++)for(let xx=minX;xx<maxX;xx++){
+     let dist=1e9;const px=(xx+.5-x-advance)/unit,py=(yy+.5-y)/unit;
+     for(const [ax,ay,bx,by] of segs){const dx=bx-ax,dy=by-ay,len=dx*dx+dy*dy,t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/len)),d=Math.hypot(px-ax-t*dx,py-ay-t*dy);if(d<dist)dist=d;}
+     const alpha=Math.max(0,Math.min(1,(weight/2-dist)*unit+.5));
+     if(alpha>0){const idx=(yy*W+xx)*4;for(let k=0;k<3;k++)pixels[idx+k]=Math.round(color[k]*alpha+pixels[idx+k]*(1-alpha));pixels[idx+3]=255;}
+    }
+   }
+   advance+=cw;
+  }
+ };
+ softText('CLUE5',413,82,87,[255,243,218],750,1.10);
+ softText((x.daily?'DAILY':'PRACTICE')+'  '+x.day,414,192,36,[220,177,127],760,.80);
+ softText(x.won?'CASE SOLVED':'CASE CLOSED',413,393,64,[255,236,205],760,1.1);
+ softText(String(x.score)+' PTS  '+x.level,413,477,42,[255,196,75],760,.95);
+ softText(String(x.used)+'/6 INCORRECT GUESSES',413,536,30,[235,215,195],760,.75);
+
  const raw=Buffer.alloc(H*(W*4+1));for(let y=0;y<H;y++){const dst=y*(W*4+1);raw[dst]=0;pixels.copy(raw,dst+1,y*W*4,(y+1)*W*4)}
  const header=Buffer.alloc(13);header.writeUInt32BE(W,0);header.writeUInt32BE(H,4);header[8]=8;header[9]=6;
  return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',zlib.deflateSync(raw,{level:6})),chunk('IEND',Buffer.alloc(0))])
