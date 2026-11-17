@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="700" viewBox="0 0 1440 700">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#090f13"/><stop offset=".52" stop-color="#1b1918"/><stop offset="1" stop-color="#3d2617"/></linearGradient>
+<linearGradient id="board" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#805132"/><stop offset=".5" stop-color="#654129"/><stop offset="1" stop-color="#3e2517"/></linearGradient>
+<linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#080b0c"/><stop offset="1" stop-color="#1a1110"/></linearGradient>
+<radialGradient id="light"><stop stop-color="#f4b45c" stop-opacity=".44"/><stop offset="1" stop-color="#f4b45c" stop-opacity="0"/></radialGradient>
+<pattern id="cork" width="13" height="13" patternUnits="userSpaceOnUse"><path d="M2 2h2m4 6h3m-8 4 2-1" stroke="#d9a67a" opacity=".14"/><circle cx="8" cy="3" r=".7" fill="#0f0908" opacity=".6"/></pattern>
+<pattern id="blinds" width="100" height="40" patternUnits="userSpaceOnUse"><path d="M0 0h100M0 8h100" stroke="#81909c" stroke-opacity=".11" stroke-width="5"/></pattern>
+<filter id="shadow"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="30"/></filter>
+</defs>
+<rect width="1440" height="700" fill="url(#bg)"/>
+<rect x="0" y="0" width="440" height="470" fill="#0d1920"/><path d="M20 0v470M190 0v470M355 0v470" stroke="#40515a" stroke-opacity=".4" stroke-width="8"/><rect width="450" height="500" fill="url(#blinds)"/>
+<path d="M0 470L1440 560V700H0Z" fill="#140f0c"/><path d="M0 515L1440 570" stroke="#764829" stroke-width="14" opacity=".4"/>
+<ellipse cx="1110" cy="175" rx="410" ry="300" fill="url(#light)"/>
+<!-- evidence board -->
+<g transform="translate(763 80) rotate(-1 315 230)">
+<rect x="-22" y="-22" width="670" height="504" fill="#120c0a" opacity=".65" filter="url(#shadow)"/>
+<rect width="650" height="490" fill="#241510" stroke="#7b4b2f" stroke-width="21"/>
+<rect x="10" y="10" width="630" height="470" fill="url(#board)"/>
+<rect x="10" y="10" width="630" height="470" fill="url(#cork)"/>
+<!-- photos & clues -->
+<g transform="translate(35 26) rotate(-8 75 65)"><rect width="154" height="120" fill="#ead9ba"/><rect x="8" y="8" width="138" height="97" fill="#282d30"/><path d="M20 90L68 44L90 62L126 23L144 85" fill="#67716b" opacity=".55"/><circle cx="84" cy="13" r="7" fill="#b52520"/></g>
+<g transform="translate(462 14) rotate(9 75 65)"><rect width="150" height="116" fill="#e6d5b8"/><rect x="8" y="8" width="134" height="90" fill="#44413c"/><path d="M14 65H135M65 20V90" stroke="#b7a184" stroke-width="8"/><circle cx="66" cy="4" r="8" fill="#b52a21"/></g>
+<g transform="translate(196 96) rotate(-4 86 95)"><rect width="172" height="176" fill="#e0cfb0"/><rect x="8" y="10" width="156" height="151" fill="#392528"/><path d="M45 125 Q50 82 72 75Q44 45 86 35Q120 42 101 76Q124 89 133 127Z" fill="#150f0e"/><path d="M52 35l41-30 44 38" stroke="#150f0e" stroke-width="13" fill="none"/><circle cx="90" cy="2" r="9" fill="#bb251d"/></g>
+<g transform="translate(393 105) rotate(6 73 80)"><rect width="148" height="150" fill="#e4d2b6"/><rect x="7" y="8" width="134" height="127" fill="#45302a"/><path d="M70 32a28 28 0 1 0 0 56a28 28 0 1 0 0-56M70 83V121M55 110l15 16 15-16" stroke="#c4a16e" stroke-width="8" fill="none"/><circle cx="71" cy="5" r="8" fill="#bd2c23"/></g>
+<g transform="translate(65 292) rotate(5 70 75)"><rect width="156" height="148" fill="#e5d3b6"/><rect x="8" y="8" width="140" height="131" fill="#41272b"/><path d="M53 28h53M53 115h53M61 28c0 32 35 30 35 43s-35 10-35 44m35-87c0 32-35 30-35 43s35 10 35 44" fill="none" stroke="#d7a366" stroke-width="6"/><circle cx="79" cy="2" r="8" fill="#bc2621"/></g>
+<g transform="translate(245 292) rotate(-6 75 75)"><rect width="156" height="148" fill="#e2cdb0"/><rect x="8" y="8" width="140" height="132" fill="#422a2b"/><path d="M30 117c0-100 104-100 104 0M40 117c0-85 84-85 84 0M50 117c0-65 64-65 64 0M60 117c0-47 44-47 44 0M70 117c0-29 24-29 24 0" stroke="#d69a68" stroke-width="4" fill="none"/><circle cx="78" cy="2" r="9" fill="#be2821"/></g>
+<g transform="translate(430 290) rotate(3 75 75)"><rect width="152" height="152" fill="#ead9b8"/><rect x="8" y="9" width="137" height="135" fill="#422729"/><circle cx="73" cy="52" r="21" stroke="#d3a071" stroke-width="8" fill="none"/><path d="M84 64l37 40-13 12-9-13-12 10-10-13-13 8-9-13" fill="#cda26e"/><circle cx="76" cy="2" r="8" fill="#b92721"/></g>
+<!-- All red threads begin and end at the six visible pushpins. -->
+<g stroke="#a3211f" stroke-width="3" opacity=".91" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M286 98L468 108L520 292L321 440L142 291L286 98"/>
+<path d="M286 98L321 292L520 292"/>
+<path d="M142 291L321 292L468 108"/>
+<path d="M321 292L321 440"/>
+<!-- Attach the two upper photograph pins to the main evidence network. -->
+<path d="M112 38L286 98"/>
+<path d="M538 17L468 108"/>
+</g>
+<g fill="#c83223" stroke="#661410" stroke-width="3"><circle cx="112" cy="38" r="7"/><circle cx="538" cy="17" r="8"/><circle cx="286" cy="98" r="8"/><circle cx="468" cy="108" r="8"/><circle cx="520" cy="292" r="8"/><circle cx="321" cy="292" r="8"/><circle cx="142" cy="291" r="8"/><circle cx="321" cy="440" r="8"/></g>
+</g>
+<!-- hanging lamp -->
+<path d="M1120 0V40" stroke="#302b29" stroke-width="10"/><path d="M1030 52Q1047 12 1125 12Q1202 12 1225 52L1242 101H1015Z" fill="#151414" stroke="#513829" stroke-width="8"/><ellipse cx="1128" cy="100" rx="113" ry="20" fill="#bb6c30"/><ellipse cx="1128" cy="105" rx="92" ry="13" fill="#f6c37c" opacity=".75"/><ellipse cx="1128" cy="150" rx="190" ry="140" fill="url(#light)"/>
+<!-- detective figure partially visible at left -->
+<path d="M0 700V365Q22 310 63 297L72 255Q44 225 53 191Q65 151 111 160Q157 161 165 201Q170 229 149 255L152 300Q230 331 260 415L275 700Z" fill="url(#shade)"/><path d="M6 195Q60 145 118 153Q183 151 209 184L156 198L25 206Z" fill="#090a0b"/><path d="M83 153L87 111Q124 98 160 119L160 159Z" fill="#101010"/><path d="M7 385Q120 350 184 378L225 700H0" fill="#141313"/><path d="M146 300L115 376L85 304" fill="#3e2c21"/>
+<!-- desk items -->
+<path d="M660 580l230-12 84 93-270 19Z" fill="#b3895e"/><path d="M700 598l160-10 40 55-180 10Z" fill="#dac39d"/><g transform="translate(1150 590) rotate(-16)"><circle cx="47" cy="44" r="55" fill="none" stroke="#c19250" stroke-width="15"/><circle cx="47" cy="44" r="43" fill="#f1d3a8" fill-opacity=".13"/><path d="M92 88l67 90" stroke="#a87435" stroke-width="20" stroke-linecap="round"/></g>
+<g opacity=".88"><rect x="945" y="612" width="161" height="39" rx="3" fill="#b08a5a" transform="rotate(5 945 612)"/><text x="958" y="639" font-family="serif" font-size="23" font-weight="bold" fill="#7c2623" transform="rotate(5 958 639)">DAILY CASE</text></g>
+</svg>
