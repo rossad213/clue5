@@ -40,6 +40,7 @@ function decrypt(value){
  return JSON.parse(Buffer.concat([dec.update(data.subarray(28)),dec.final()]).toString('utf8'));
 }
 const editDistance=(a,b,cap)=>{if(Math.abs(a.length-b.length)>cap)return false;let row=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const next=[i];let low=i;for(let j=1;j<=b.length;j++){next[j]=Math.min(next[j-1]+1,row[j]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));low=Math.min(low,next[j]);}if(low>cap)return false;row=next;}return row[b.length]<=cap;};
+function adjacentSwapTypo(q,a){if(q.length!==a.length||q.length<5)return false;let i=0;while(i<q.length&&q[i]===a[i])i++;return i<q.length-1&&q[i]===a[i+1]&&q[i+1]===a[i]&&q.slice(i+2)===a.slice(i+2)}
 function match(guess,c){
  const q=n(guess);if(!q)return false;
  const options=[c[0],...(c[3]||[]),...(answerAliases[c[0]]||[])];const plain=c[0].replace(/^(the|a|an)\s+/i,'');if(plain!==c[0])options.push(plain);
@@ -47,7 +48,7 @@ function match(guess,c){
   const words=c[0].split(/\s+/);const last=words[words.length-1];
   if(last.length>=5&&!cases.some(x=>x!==c&&(x[1]==='People'||x[1]==='Person')&&x[0].split(/\s+/).at(-1).toLowerCase()===last.toLowerCase()))options.push(last);
  }
- return options.some(ans=>{const a=n(ans);return a===q||(q.length>=6&&editDistance(q,a,a.length>=11&&q.length>=11?2:1));});
+ return options.some(ans=>{const a=n(ans);if(a===q||adjacentSwapTypo(q,a))return true;if(q.length<6||a.length<6)return false;return editDistance(q,a,a.length>=11&&q.length>=11?2:1);});
 }
 function hint(answer){
  const label=answer.replace(/^(the|a|an)\s+/i,'').replace(/[^a-zA-Z0-9\s-]/g,' ').trim(),words=label.split(/\s+/).filter(Boolean);
