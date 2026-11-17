@@ -1,6 +1,6 @@
 /* Clue5 PWA: local practice works offline; private daily API stays online-only. */
-const CACHE='clue5-static-v4';
-const SHELL=['/','/index.html','/how-to-play.html','/privacy.html','/data/practice.js','/assets/answer-aliases.js','/assets/noir-office.svg','/favicon.png?v=3','/manifest.webmanifest','/icons/clue5-192.svg','/icons/clue5-512.svg','/icons/clue5-maskable.svg'];
+const CACHE='clue5-static-v5';
+const SHELL=['/','/index.html','/how-to-play.html','/privacy.html','/data/practice.js','/assets/account.js','/assets/answer-aliases.js','/assets/noir-office.svg','/favicon.png?v=3','/manifest.webmanifest','/icons/clue5-192.svg','/icons/clue5-512.svg','/icons/clue5-maskable.svg'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
 });
