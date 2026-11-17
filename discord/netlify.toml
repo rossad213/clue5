@@ -1,0 +1,11 @@
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
+# Configuration applies to the Discord site only (discord/ package and base).
+# Override UI publish setting that had allowed the root Clue5 site to appear.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
