@@ -3,5 +3,6 @@ Allow: /
 Disallow: /api/
 Disallow: /server/
 Disallow: /data/
+Allow: /data/practice.js
 Disallow: /_vercel/
 Sitemap: https://clue-five-wheat.vercel.app/sitemap.xml
