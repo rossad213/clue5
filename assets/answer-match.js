@@ -33,13 +33,24 @@
   let i=0;while(i<a.length&&a[i]===b[i])i++;
   return i<a.length-1&&a[i]===b[i+1]&&a[i+1]===b[i]&&a.slice(i+2)===b.slice(i+2);
  }
+ // Keyword profiles are generated from every official answer and its vetted aliases.
+ // Reorder complete identifying words, never match just one word or a subset.
+ // Function words are ignored only for this order-independent check.
+ const NOISE_WORDS=new Set(['the','a','an','of','in','on','at','for','to','and']);
+ function keywordProfile(text){
+  return words(text).split(' ').filter(token=>token&&!NOISE_WORDS.has(token)).sort();
+ }
+ function keywordMatch(guess,candidate){
+  const q=keywordProfile(guess),a=keywordProfile(candidate);
+  return a.length>=2&&q.length===a.length&&a.some(token=>token.length>=4)&&q.every((token,i)=>token===a[i]);
+ }
  function matches(guess,candidates){
   const q=key(guess);
   if(!q)return false;
   for(const item of candidates){
    const a=key(item);
    if(!a)continue;
-   if(q===a)return true;
+   if(q===a||keywordMatch(guess,item))return true;
    // Never fuzzy-match distinct years, dates, numbered sequels or similar numeric facts.
    if((q.match(/[0-9]+/g)||[]).join('|')!==(a.match(/[0-9]+/g)||[]).join('|'))continue;
    if(swap(q,a))return true;
@@ -47,5 +58,5 @@
   }
   return false;
  }
- return {matches,key,words};
+ return {matches,key,words,keywordProfile};
 });
