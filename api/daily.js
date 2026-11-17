@@ -75,6 +75,7 @@ module.exports=async function handler(req,res){
    const body=typeof req.body==='string'?JSON.parse(req.body):req.body||{};
    if(!['restore','guess','reveal','giveup'].includes(body.action))return respond(res,400,{error:'Unknown action'});
    session=decrypt(body.token);
+   const wasDone=!!session?.done;
    if(!session||!validDay(session.day,today)||!Number.isInteger(session.clue)||session.clue<1||session.clue>5||!Number.isInteger(session.used)||session.used<0||session.used>6||typeof session.done!=='boolean')return respond(res,409,{error:'Session unavailable for this date'});
    if(!session.done){
     if(body.action==='guess'){
@@ -84,7 +85,7 @@ module.exports=async function handler(req,res){
     }else if(body.action==='reveal'){session.clue=Math.min(5,session.clue+1);}
     else if(body.action==='giveup'){session.done=true;session.won=false;session.score=0;}
    }
-   if(session.done&&!session.playedOn)session.playedOn=today;
+   if(session.done&&!session.playedOn)session.playedOn=wasDone?session.day:today;
   }
   return respond(res,200,answerObj(session,select(session.day)));
  }catch(err){return respond(res,400,{error:'Invalid or expired daily session. Refresh to begin a new session.'});}
