@@ -2,6 +2,7 @@
 // Discord signs each request; reject invalid signatures before responding.
 // Parsing MUST remain disabled to preserve the exact signed request bytes.
 import {createPublicKey,verify} from 'node:crypto';
+import {rememberLaunch} from '../lib/launch-tokens.js';
 export const config={api:{bodyParser:false}};
 function valid(raw,signature,timestamp,keyHex){
  if(!/^[a-f0-9]{128}$/i.test(signature||'')||!/^[a-f0-9]{64}$/i.test(keyHex||'')||!/^\d{8,20}$/.test(timestamp||''))return false;
@@ -22,7 +23,14 @@ export default async function handler(req,res){
    return res.status(401).json({error:'Invalid Discord request signature'});
   let interaction;try{interaction=JSON.parse(raw.toString('utf8'))}catch{return res.status(400).json({error:'Invalid JSON'})}
   if(interaction.type===1)return res.status(200).json({type:1});
-  if(interaction.type===2&&interaction.data?.type===1&&interaction.data?.name==='clue5')return res.status(200).json({type:12});
+  if(interaction.type===2&&interaction.data?.type===1&&interaction.data?.name==='clue5'){
+   // Keep launch responsive even if result callback storage is temporarily unavailable.
+   try{await Promise.race([
+    rememberLaunch(interaction),
+    new Promise((_,reject)=>setTimeout(()=>reject(Error('Launch storage timeout')),1400))
+   ]);}catch(e){console.warn('Discord result callback unavailable:',String(e.message||e));}
+   return res.status(200).json({type:12});
+  }
   return res.status(400).json({error:'Unsupported interaction'});
  }catch(e){console.error('Discord interactions error:',e);return res.status(500).json({error:'Interactions unavailable'})}
 }
