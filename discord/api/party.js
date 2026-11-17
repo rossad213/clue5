@@ -29,6 +29,8 @@ async function checkIdentity(req,id){
  // Verify instance is active; a spoofed Discord iframe alone never authorizes a room.
  const instance=await fetch('https://discord.com/api/v10/applications/'+process.env.DISCORD_CLIENT_ID+'/activity-instances/'+encodeURIComponent(id),{headers:{Authorization:'Bot '+process.env.DISCORD_BOT_TOKEN}});
  if(!instance.ok)throw Error('This Discord Activity room is not active');
+ const room=await instance.json();
+ if(!Array.isArray(room.users)||!room.users.includes(String(user.id)))throw Error('You are not a participant in this Discord Activity');
  return {id:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40)};
 }
 function chosen(pool,exclude=-1){let index=Math.floor(Math.random()*pool.length);if(index===exclude&&pool.length>1)index=(index+1)%pool.length;return index}
