@@ -26,7 +26,7 @@ Separate Vercel project: clue5-discord (root directory: discord/). Existing Clue
 - The Party Mode API has been coded, but cannot connect players before owner configures Discord OAuth, bot token, URL mapping, and dedicated Supabase project.
 - The initial multiplayer engine uses 4-second polling, not WebSockets.
 - Existing Clue5 website and Discord edition do not synchronize statistics or streaks.
-- Paid subscriptions and slash-command bot are future features.
+- Paid subscriptions are future features. The /clue5 slash command endpoint and registration script exist, but registration and Discord Developer Portal configuration must be completed before the command is usable.
 
 ## Security
 - Never expose Discord secrets or the Supabase service role key publicly.
@@ -41,3 +41,12 @@ Separate Vercel project: clue5-discord (root directory: discord/). Existing Clue
 - Result messages are sent server-side via DISCORD_BOT_TOKEN after checking the player's OAuth identity and membership in the active Activity. The client cannot select an arbitrary posting destination.
 - Discord's message nonce prevents duplicate posts within a short window. Solo results also record successful deliveries locally, but permanent server-side deduplication is not yet available.
 - If Discord denies posting, the Activity preserves the score and displays a delivery warning instead of blocking the game. No automatic sharing occurs in standalone browser preview.
+
+## /clue5 in servers and private DMs
+- A global CHAT_INPUT command named `clue5` launches the same Activity. It supports server installs and user installs: `integration_types: [0, 1]`, `contexts: [0, 1, 2]`.
+- Under Discord Developer Portal > Clue5 > Installation, enable BOTH User Install and Guild Install with the `applications.commands` scope. Server bot installation is optional for launching the Activity but is needed for bot-authored results in server channels.
+- Under General Information, set **Interactions Endpoint URL** to `https://discord.clue5.io/api/interactions`. Set this only after the `discord/api/interactions.js` route is deployed and reachable. The route verifies requests using `DISCORD_PUBLIC_KEY` and responds to `/clue5` with Discord's Launch Activity callback.
+- Register the global slash command **once** with `node discord/scripts/register-clue5.mjs`, with `DISCORD_BOT_TOKEN` set in your LOCAL shell. Never paste the token into GitHub, chat, or browser tools. This script creates/updates the command using Discord's API.
+- To test private DMs with another user, install Clue5 to **your own Discord account** using the User Install authorization flow; the other person does not have to create or manage a server.
+- Confirm `/clue5` appears in both a 1-on-1 DM and a server channel, and that the Activity launches. It may take a short time for Discord to propagate the global command.
+- **Important:** Directly posting completed-game results into third-party DMs is not guaranteed by guild bot permissions. DM result delivery is a separate feature requiring DM-compatible authorization and verification; don't assume it works until independently tested.
