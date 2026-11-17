@@ -419,9 +419,9 @@ function describeHistory(day){
  if(day>dateKey()){historyText(detail,'h4','Upcoming case');historyText(detail,'p','This investigation has not opened yet.','history-empty');return;}
  if(day<historyLaunch&&!record){historyText(detail,'h4','No archive available');historyText(detail,'p','Daily case history begins November 15, 2026.','history-empty');return;}
  const isCatchup=!!record?.late||(!!record?.playedOn&&record.playedOn!==day);
- const status=record?.won?(isCatchup?'Solved later · Catch-up':'Solved on the day'):record?.done?(isCatchup?'Closed later · Catch-up':'Unsolved'):record?'In progress':day===dateKey()?'Not played yet':'Missed · Available to play';
+ const status=record?.won?(isCatchup?'Solved later · Catch-up':'Solved on the day'):record?.done?(isCatchup?'Closed later · Catch-up':'Unsolved'):record?(day<dateKey()?'Unsolved · Not finished':'In progress'):day===dateKey()?'Not played yet':'Missed · Available to play';
  historyText(detail,'h4',record?.answer||'Daily mystery','');
- historyText(detail,'div',status,'history-status '+(isCatchup?'catchup':record?.won?'solved':record?.done||!record?'unsolved':'progress'));
+ historyText(detail,'div',status,'history-status '+(isCatchup?'catchup':record?.won?'solved':record?.done||!record||day<dateKey()?'unsolved':'progress'));
  if(isCatchup)historyText(detail,'p','This was completed after its original daily date. It counts toward your archive but not your on-time streak.','history-empty');
  if(!record){
   historyText(detail,'p',day===dateKey()?'Play today’s mystery to start your case report.':'This date was missed. You can investigate it now; your result will be marked as a catch-up solve.','history-empty');
@@ -463,15 +463,15 @@ function renderHistoryCalendar(){
   const key=historyMonth+'-'+String(day).padStart(2,'0'),record=data.daily?.[key];
   const future=key>current||key<historyLaunch;
   const button=historyText(calendar,'button','','case-day');
-  button.type='button';button.disabled=future;button.setAttribute('aria-label',key+': '+(record?.won?'solved':record?.done?'unsolved':record?'in progress':'not played'));
+  button.type='button';button.disabled=future;button.setAttribute('aria-label',key+': '+(record?.won?'solved':record?.done?'unsolved':record?(key<current?'unsolved, unfinished':'in progress'):'not played'));
   button.classList.toggle('solved',!!record?.won&&!record?.late&&(!record?.playedOn||record.playedOn===key));
   button.classList.toggle('catchup',!!record?.late||(!!record?.playedOn&&record.playedOn!==key));
   button.classList.toggle('unsolved',!record?.won&&key<current);
-  button.classList.toggle('progress',!!record&&!record.done);
+  button.classList.toggle('progress',!!record&&!record.done&&key===current);
   button.classList.toggle('today',key===current);
   button.classList.toggle('selected',key===historySelected);
   historyText(button,'strong',String(day));
-  historyText(button,'small',record?.won?(record?.late||(record?.playedOn&&record.playedOn!==key)?'LATE ✓':'SOLVED'):record?.done?'UNSOLVED':record?'OPEN':key<current&&key>=historyLaunch?'PLAY':'');
+  historyText(button,'small',record?.won?(record?.late||(record?.playedOn&&record.playedOn!==key)?'LATE ✓':'SOLVED'):record?.done?'UNSOLVED':record?(key<current?'UNSOLVED':'OPEN'):key<current&&key>=historyLaunch?'PLAY':'');
   button.onclick=()=>{historySelected=key;renderHistoryCalendar();};
  }
  if(historySelected.slice(0,7)!==historyMonth)historySelected=historyMonth+'-01';
