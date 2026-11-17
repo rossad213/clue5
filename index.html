@@ -277,6 +277,8 @@ for(const c of cases.slice(25)){
   if(answerKey.length>=5 && fifthKey.includes(answerKey))c.clues[4]=solutionHint(c.answer);
 }
 const CASE_COUNT=cases.length+730;
+// Anonymous product metrics: event names only, never guesses, answers, IDs or case contents.
+const clue5Track=name=>{if(typeof window.va==='function')window.va('event',{name})};
 const $=id=>document.getElementById(id), key="clue-five-v1",load=()=>{try{return JSON.parse(localStorage.getItem(key))||{daily:{},practice:0}}catch{return {daily:{},practice:0}}},store=()=>{try{localStorage.setItem(key,JSON.stringify(data))}catch{}};let data=load(),state=null;const dateKey=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 const legacyCaseIndex=()=>{let s=dateKey().replace(/\D/g,"");let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h%cases.length};
 // Practice cases are intentionally a separate pool; reserved daily cases are
@@ -336,6 +338,7 @@ async function playDaily(action,extra={}){
    else if(action==='giveup')event={kind:'giveup'};
    if(event){data.daily[result.day]={...(data.daily[result.day]||{}),events:[...events,event]};}
    updateDaily(result);
+   if(result.done)clue5Track(result.won?'daily_case_solved':'daily_case_unsolved');
    if(action==='guess'&&!result.won&&result.used>oldUsed&&!result.done)$('notice').textContent='Incorrect. '+(6-result.used)+' guesses remaining.';
  }catch(error){$('notice').textContent=error.message;}
  finally{controls[0].disabled=!!state?.done||state?.clue>=5;controls[1].disabled=!!state?.done;controls[2].disabled=!!state?.done;if(state?.done)$('guessForm').classList.add('hidden');}
@@ -353,6 +356,7 @@ async function start(daily){
   try{
    const payload=await dailyFetch('open');
    updateDaily(payload);
+   clue5Track('daily_case_opened');
    view('game');
   }catch(error){$('dailyStatus').textContent='Daily mystery unavailable: '+error.message;view('home');}
   finally{$('daily').disabled=false;}
@@ -365,6 +369,7 @@ async function start(daily){
  if(!pool.length){$('dailyStatus').textContent='No practice cases are available right now.';view('home');return;}
  const chosen=pool[Math.floor(Math.random()*pool.length)];
  data.practiceSeen=[...seen,chosen.id];store();
+ clue5Track('practice_case_opened');
  state={c:chosen,day,daily:false,remote:false,clue:1,used:0,done:false,won:false,score:0,saved:false};
  $('mode').textContent='PRACTICE CASE';
  $('category').textContent='CASE #'+String(chosen.id).padStart(3,'0')+' · '+chosen.category.toUpperCase();
@@ -492,14 +497,14 @@ function render(){if(!state)return;const s=state;$("count").textContent=String(s
  const next=document.createElement('button');next.type='button';next.className='btn result-next';next.textContent='OPEN A PRACTICE CASE ↗';next.onclick=()=>start(false);
  o.append(stamp,label,rank,title,sub,grid,honorsWrap,next);
  $('shareWrap').classList.remove('hidden');$('shareStatus').textContent='';
- }else{$("shareWrap").classList.add("hidden")}}function finish(won){state.done=true;state.won=won;state.score=won?120-state.clue*20:0;save();render();dailyStatus()}
+ }else{$("shareWrap").classList.add("hidden")}}function finish(won){state.done=true;state.won=won;state.score=won?120-state.clue*20:0;save();render();dailyStatus();if(!state.daily)clue5Track(won?"practice_case_solved":"practice_case_unsolved")}
 $("guessForm").onsubmit=e=>{e.preventDefault();if(!state||state.done)return;const text=$("guess").value.trim();if(!text)return;if(state.daily){playDaily("guess",{guess:text});return;}if(isCorrect(text,state.c)){finish(true)}else{state.used++;$("guess").value="";if(state.used>=6)finish(false);else{save();render();$("notice").textContent="Incorrect. "+(6-state.used)+" guesses remaining."}}};
 $("reveal").onclick=()=>{if(!state||state.done||state.clue>=5)return;if(state.daily){playDaily("reveal");return;}state.clue++;save();render()};$("shareResult").onclick=async()=>{
  if(!state?.done)return;
  const report=shareText(state);
  if(navigator.share){try{await navigator.share({title:'Clue5 Case Report',text:report});$('shareStatus').textContent='Case report shared.';return;}catch(e){if(e.name==='AbortError')return;}}
  try{await navigator.clipboard.writeText(report);$('shareStatus').textContent='Spoiler-free report copied!';}catch{$('shareStatus').textContent=report;}
-};$("giveup").onclick=()=>{if(!state||state.done||!confirm("Close this case and reveal the answer?"))return;if(state.daily)playDaily("giveup");else finish(false)};$("homeLink").onclick=$("back").onclick=$("statsBack").onclick=()=>{dailyStatus();view("home")};$("daily").onclick=()=>start(true);$("practice").onclick=()=>start(false);$("statsButton").onclick=()=>{const arr=Object.values(data.daily||{}),solved=arr.filter(x=>x.won);const total=solved.reduce((n,x)=>n+x.score,0);let last=0;for(let d=new Date();last<366;d.setDate(d.getDate()-1)){let key=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);let r=data.daily[key];if(r?.won)last++;else if(last===0&&!r)continue;else break}const vals=[["Daily cases",arr.length],["Daily wins",solved.length],["Daily points",total],["Practice cases",data.practice||0],["Avg clues",solved.length?(solved.reduce((a,x)=>a+x.clue,0)/solved.length).toFixed(1):"—"],["Recent streak",last]];$("statgrid").innerHTML=vals.map(([name,value])=>'<div class="statitem"><b>'+value+'</b><span>'+name+'</span></div>').join("");const gallery=$('badgeGallery');gallery.replaceChildren();
+};$("giveup").onclick=()=>{if(!state||state.done||!confirm("Close this case and reveal the answer?"))return;if(state.daily)playDaily("giveup");else finish(false)};$("homeLink").onclick=$("back").onclick=$("statsBack").onclick=()=>{dailyStatus();view("home")};$("daily").onclick=()=>start(true);$("practice").onclick=()=>start(false);$("statsButton").onclick=()=>{clue5Track("statistics_opened");const arr=Object.values(data.daily||{}),solved=arr.filter(x=>x.won);const total=solved.reduce((n,x)=>n+x.score,0);let last=0;for(let d=new Date();last<366;d.setDate(d.getDate()-1)){let key=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);let r=data.daily[key];if(r?.won)last++;else if(last===0&&!r)continue;else break}const vals=[["Daily cases",arr.length],["Daily wins",solved.length],["Daily points",total],["Practice cases",data.practice||0],["Avg clues",solved.length?(solved.reduce((a,x)=>a+x.clue,0)/solved.length).toFixed(1):"—"],["Recent streak",last]];$("statgrid").innerHTML=vals.map(([name,value])=>'<div class="statitem"><b>'+value+'</b><span>'+name+'</span></div>').join("");const gallery=$('badgeGallery');gallery.replaceChildren();
 const achievements=[];
 if(solved.some(x=>x.clue===1))achievements.push(['✦','Eagle Eye','Solved a case on the first clue']);
 if(solved.some(x=>x.clue<=2))achievements.push(['◆','Sharp Instincts','Solved with two clues or fewer']);
