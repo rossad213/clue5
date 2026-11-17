@@ -7,7 +7,11 @@ const clue5AnswerAliases={
     "the global financial crisis",
     "2008 global financial crisis",
     "financial crisis of 2008",
-    "2007-2008 financial crisis"
+    "2007-2008 financial crisis",
+    "2008 recession",
+    "the 2008 recession",
+    "recession of 2008",
+    "2008 economic recession"
   ],
   "Automobile": [
     "car",
