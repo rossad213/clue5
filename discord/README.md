@@ -33,3 +33,11 @@ Separate Vercel project: clue5-discord (root directory: discord/). Existing Clue
 - Party API checks Discord OAuth user and verifies Activity instance with Discord Bot API before accessing rooms.
 - Database table enables RLS and denies anon/authenticated role access; all access is server-side.
 - Solo daily puzzles use the existing secure Clue5 server and do not publish upcoming daily answers.
+
+## Automatic channel results
+- Completed solo Daily and Practice cases publish a spoiler-free result into the Discord channel that launched the Activity, without a Share button or prompt.
+- Party Mode publishes a final leaderboard when the round is completed by all players or ended by the host. The secret answer is never included in the channel message.
+- The bot must be installed in the server and have **View Channel** and **Send Messages** for that channel. For private-channel Activities, the bot must be able to access the target channel.
+- Result messages are sent server-side via DISCORD_BOT_TOKEN after checking the player's OAuth identity and membership in the active Activity. The client cannot select an arbitrary posting destination.
+- Discord's message nonce prevents duplicate posts within a short window. Solo results also record successful deliveries locally, but permanent server-side deduplication is not yet available.
+- If Discord denies posting, the Activity preserves the score and displays a delivery warning instead of blocking the game. No automatic sharing occurs in standalone browser preview.
