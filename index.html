@@ -291,7 +291,7 @@ for(const c of cases.slice(25)){
 const CASE_COUNT=cases.length+730;
 // Anonymous product metrics: event names only, never guesses, answers, IDs or case contents.
 const clue5Track=name=>{if(typeof window.va==='function')window.va('event',{name})};
-const $=id=>document.getElementById(id), key="clue-five-v1",load=()=>{try{return JSON.parse(localStorage.getItem(key))||{daily:{},practice:0}}catch{return {daily:{},practice:0}}},store=()=>{try{localStorage.setItem(key,JSON.stringify(data))}catch{}};let data=load(),state=null;const dateKey=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+const $=id=>document.getElementById(id), key="clue-five-v1",load=()=>{try{return JSON.parse(localStorage.getItem(key))||{daily:{},practice:0}}catch{return {daily:{},practice:0}}},store=()=>{try{localStorage.setItem(key,JSON.stringify(data));window.dispatchEvent(new Event('clue5:progress'))}catch{}};let data=load(),state=null;const dateKey=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
 const legacyCaseIndex=()=>{let s=dateKey().replace(/\D/g,"");let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h%cases.length};
 // Practice cases are intentionally a separate pool; reserved daily cases are
 // selected, checked and revealed only by the private daily API.
@@ -309,19 +309,20 @@ function isCorrect(text,c){return window.CLUE5_ANSWER_MATCH.matches(text,matchin
    if(state.token)data.dailySessions[state.day]=state.token;
    // Preserve previous history while never persisting the secret answer early.
    const previousRecord=data.daily[state.day]||{};
-   data.daily[state.day]={...previousRecord,answer:state.done?state.c.answer:null,clue:state.clue,used:state.used,done:state.done,won:state.won,score:state.score,category:state.c.category||previousRecord.category||null,cluesShown:state.c.clues?.slice(0,state.clue)||previousRecord.cluesShown||[]};
+   data.daily[state.day]={...previousRecord,answer:state.done?state.c.answer:null,playedOn:state.done?(state.playedOn||dateKey()):previousRecord.playedOn||null,late:state.done?(state.playedOn||dateKey())!==state.day:false,clue:state.clue,used:state.used,done:state.done,won:state.won,score:state.score,category:state.c.category||previousRecord.category||null,cluesShown:state.c.clues?.slice(0,state.clue)||previousRecord.cluesShown||[]};
  }else if(state.done&&!state.saved){data.practice=(data.practice||0)+1;state.saved=true;}
  store();
 }
-async function dailyFetch(action,extra={}){
- const day=dateKey();
+async function dailyFetch(action,extra={},day=dateKey()){
+ if(day>dateKey()||day<'2026-11-15')throw Error('That date is not available in the daily archive');
  const token=data.dailySessions?.[day];
  const isOpen=action==='open';
  const body=isOpen&&token?{action:'restore',token}:!isOpen?{action,token,...extra}:null;
- let response=await fetch('/api/daily',{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'});
+ const endpoint='/api/daily'+(isOpen?'?day='+encodeURIComponent(day):'');
+ let response=await fetch(endpoint,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined,cache:'no-store'});
  if(isOpen&&!response.ok&&token){
    // A stale session from an older deployment must not make daily play inaccessible.
-   response=await fetch('/api/daily',{cache:'no-store'});
+   response=await fetch('/api/daily?day='+encodeURIComponent(day),{cache:'no-store'});
  }
  const payload=await response.json();
  if(!response.ok)throw Error(payload.error||'Could not contact the daily case server');
@@ -329,8 +330,8 @@ async function dailyFetch(action,extra={}){
 }
 function updateDaily(payload){
  const previous=state&&state.daily?state:null;
- state={c:{id:'DAILY',answer:payload.answer||'',category:payload.category,clues:payload.clues},day:payload.day,daily:true,remote:true,token:payload.token,clue:payload.clue,used:payload.used,done:payload.done,won:payload.won,score:payload.score,saved:false};
- $('mode').textContent='DAILY CASE';
+ state={c:{id:'DAILY',answer:payload.answer||'',category:payload.category,clues:payload.clues},day:payload.day,daily:true,remote:true,token:payload.token,clue:payload.clue,used:payload.used,done:payload.done,won:payload.won,score:payload.score,playedOn:payload.playedOn||null,saved:false};
+ $('mode').textContent=payload.day===dateKey()?'DAILY CASE':'ARCHIVED DAILY CASE · '+payload.day;
  $('category').textContent='DAILY DOSSIER · '+payload.category.toUpperCase();
  $('guess').value='';
  save();render();dailyStatus();
@@ -341,7 +342,7 @@ async function playDaily(action,extra={}){
  const controls=[$('reveal'),$('giveup'),$('guessForm').querySelector('button')];
  controls.forEach(b=>b.disabled=true);
  try{
-   const result=await dailyFetch(action,extra);
+   const result=await dailyFetch(action,extra,state.day);
    const events=data.daily[result.day]?.events||[];
    let event=null;
    if(action==='guess')event={kind:'guess',value:String(extra.guess||'').slice(0,80),correct:!!result.won,clue:state.clue};
