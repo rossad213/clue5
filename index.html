@@ -250,6 +250,7 @@ body{background:radial-gradient(ellipse at 50% 0,#302117 0,transparent 46%),#0c0
  <div class="case-history-detail" id="caseHistoryDetail" aria-live="polite"></div>
 </section><div class="achievements-history"><div class="eyebrow">✦ YOUR DETECTIVE HONORS</div><div id="badgeGallery" class="badge-gallery"></div></div><div class="record-actions"><button type="button" class="btn outline" id="exportProgress">EXPORT RECORDS ↓</button><button type="button" class="btn outline" id="importProgress">RESTORE RECORDS ↑</button><input type="file" id="progressFile" class="hidden" accept=".json,application/json" aria-label="Select Clue5 records backup"></div><div class="small backup-status" id="backupStatus" role="status">Your cases are saved in this browser. Export a backup to protect your streak and history.</div><button id="reset" class="linkbtn">Clear saved records</button></div></section></main><footer><span>CLUE5 ◈ EVERY MYSTERY HAS AN ANSWER</span> <span class="footer-links"><a href="/how-to-play.html">How to Play</a> · <a href="/privacy.html">Privacy</a></span></footer>
 <script src="/assets/answer-aliases.js"></script>
+<script src="/assets/clue-safety.js"></script>
 <script src="data/practice.js"></script>
 <script>
 const raw=[];
@@ -257,7 +258,7 @@ const allRaw=[...raw,...(window.CLUE5_ADDITIONS||[])];
 const normalizedAnswer=s=>s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 const uniqueRaw=allRaw.filter((r,i,a)=>a.findIndex(q=>normalizedAnswer(q[0])===normalizedAnswer(r[0]))===i);
 const extraAliases={"Queen band":["Queen"],"David sculpture":["David","Michelangelo's David"],"1984 novel":["1984","Nineteen Eighty-Four"],"Frankenstein novel":["Frankenstein"],"Dracula novel":["Dracula"],"The Starry Night":["Starry Night"],"Beethoven's Fifth Symphony":["Beethoven's Fifth","Symphony No. 5"],"Beethoven's Ninth Symphony":["Beethoven's Ninth","Ode to Joy"],"The Great Wave off Kanagawa":["Great Wave","The Great Wave"],"First Powered Flight":["Wright brothers first flight"],"Mona Lisa":["La Gioconda"],"The Great Gatsby":["Great Gatsby"],"The Catcher in the Rye":["Catcher in the Rye"],"The Lion the Witch and the Wardrobe":["The Lion, the Witch and the Wardrobe"],"Pyramids of Giza":["Giza Pyramids"],"The Nile River":["Nile"],"The Amazon River":["Amazon River"],"Mount Kilimanjaro":["Kilimanjaro"],"Mount Fuji":["Fuji"],"The Alps":["Alps"]};
-const cases=uniqueRaw.map((r,i)=>({id:i+1,answer:r[0],category:r[1],clues:r[2],aliases:[...(r[3]||[]),...(extraAliases[r[0]]||[])]}));
+const cases=uniqueRaw.filter(r=>!window.CLUE5_SPOILER_GUARD.leaks(r,window.CLUE5_ANSWER_ALIASES)).map((r,i)=>({id:i+1,answer:r[0],category:r[1],clues:r[2],aliases:[...(r[3]||[]),...(extraAliases[r[0]]||[])]}));
 
 // Editorial guard: do not show the full solution inside a clue.
 // A provisional final clue uses the answer's initials/length where a
