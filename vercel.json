@@ -10,6 +10,10 @@
       "dest": "/api/blocked"
     },
     {
+      "src": "/result",
+      "dest": "/api/result"
+    },
+    {
       "handle": "filesystem"
     },
     {
