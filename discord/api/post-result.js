@@ -1,5 +1,6 @@
 // Solo results are posted automatically on completion, from the authenticated Activity.
 import {verifiedActivity,postResult,soloResult} from '../lib/channel-results.js';
+import {claimLaunch,postInteractionResult} from '../lib/launch-tokens.js';
 const MAIN='https://clue-five-wheat.vercel.app';
 export default async function handler(req,res){
  res.setHeader('Cache-Control','private, no-store');
@@ -26,7 +27,12 @@ export default async function handler(req,res){
    day='';identity='practice:'+b.roundId;
   }
   const key=activity.userId+':'+activity.channel+':'+identity;
-  await postResult(activity.channel,key,soloResult(activity.name,day,won,score,clue,used,b.mode==='daily'));
+  const message=soloResult(activity.name,day,won,score,clue,used,b.mode==='daily');
+  if(activity.locationKind==='pc'){
+   const launchToken=await claimLaunch(activity.channel,activity.userId);
+   if(!launchToken)throw Error('Discord DM result window expired. Relaunch /clue5 to play another case.');
+   await postInteractionResult(launchToken,message);
+  }else await postResult(activity.channel,key,message);
   return res.status(200).json({posted:true});
  }catch(err){return res.status(400).json({error:String(err.message||'Could not publish result').slice(0,160)})}
 }
