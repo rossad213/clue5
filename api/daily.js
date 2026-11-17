@@ -7,6 +7,7 @@ const answerMatch=require('../assets/answer-match.js');
 const safeCases=spoilerGuard.clean(cases,answerAliases);
 const secret=process.env.CLUE5_DAILY_SECRET;
 const START='2026-11-15';
+const validDay=(day,today)=>typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&day>=START&&day<=today&&new Date(day+'T12:00:00Z').toISOString().slice(0,10)===day;
 const n=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
 const signed=s=>crypto.createHmac('sha256',secret).update(s).digest();
 const dateKey=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -57,7 +58,7 @@ function hint(answer){
 function cluesFor(c){return c[2].slice();}
 function answerObj(session,c){
  const complete=session.done;
- return {day:session.day,category:c[1],caseLabel:'DAILY DOSSIER',clue:session.clue,used:session.used,done:complete,won:session.won,score:session.score,clues:cluesFor(c).slice(0,session.clue),answer:complete?c[0]:null,token:encrypt(session)};
+ return {day:session.day,category:c[1],caseLabel:'DAILY DOSSIER',clue:session.clue,used:session.used,done:complete,won:session.won,score:session.score,clues:cluesFor(c).slice(0,session.clue),answer:complete?c[0]:null,playedOn:complete?(session.playedOn||session.day):null,late:complete&&(session.playedOn||session.day)!==session.day,token:encrypt(session)};
 }
 function respond(res,status,obj){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store, private, max-age=0');res.setHeader('X-Content-Type-Options','nosniff');res.end(JSON.stringify(obj));}
 module.exports=async function handler(req,res){
@@ -65,21 +66,26 @@ module.exports=async function handler(req,res){
  if(req.method!=='GET'&&req.method!=='POST')return respond(res,405,{error:'Method not allowed'});
  try{
   const today=dateKey();let session;
-  if(req.method==='GET')session={day:today,clue:1,used:0,done:false,won:false,score:0};
+  if(req.method==='GET'){
+   const day=String(req.query?.day||today);
+   if(!validDay(day,today))return respond(res,400,{error:'Archived cases are available only from launch through today'});
+   session={day,clue:1,used:0,done:false,won:false,score:0};
+  }
   else{
    const body=typeof req.body==='string'?JSON.parse(req.body):req.body||{};
    if(!['restore','guess','reveal','giveup'].includes(body.action))return respond(res,400,{error:'Unknown action'});
    session=decrypt(body.token);
-   if(!session||session.day!==today||!Number.isInteger(session.clue)||session.clue<1||session.clue>5||!Number.isInteger(session.used)||session.used<0||session.used>6||typeof session.done!=='boolean')return respond(res,409,{error:'Session unavailable for this date'});
+   if(!session||!validDay(session.day,today)||!Number.isInteger(session.clue)||session.clue<1||session.clue>5||!Number.isInteger(session.used)||session.used<0||session.used>6||typeof session.done!=='boolean')return respond(res,409,{error:'Session unavailable for this date'});
    if(!session.done){
     if(body.action==='guess'){
       if(typeof body.guess!=='string'||body.guess.length<1||body.guess.length>80)return respond(res,400,{error:'Enter a guess up to 80 characters'});
-      if(match(body.guess,select(today))){session.done=true;session.won=true;session.score=120-session.clue*20;}
+      if(match(body.guess,select(session.day))){session.done=true;session.won=true;session.score=120-session.clue*20;}
       else{session.used++;if(session.used>=6){session.done=true;session.won=false;session.score=0;}}
     }else if(body.action==='reveal'){session.clue=Math.min(5,session.clue+1);}
     else if(body.action==='giveup'){session.done=true;session.won=false;session.score=0;}
    }
+   if(session.done&&!session.playedOn)session.playedOn=today;
   }
-  return respond(res,200,answerObj(session,select(today)));
+  return respond(res,200,answerObj(session,select(session.day)));
  }catch(err){return respond(res,400,{error:'Invalid or expired daily session. Refresh to begin a new session.'});}
 };
