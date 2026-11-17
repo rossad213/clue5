@@ -80,7 +80,7 @@ function resultLink(s){
   c:Number(s.clue),u:Number(s.used),p:Number(s.score)
  };
  // Only public spoiler-free result values; never include the case answer or session token.
- const encoded=btoa(JSON.stringify(payload)).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+ const encoded=btoa(JSON.stringify(payload)).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
  return URL+'/result?r='+encoded;
 }
 async function share(s){
