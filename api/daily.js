@@ -2,21 +2,23 @@
 const crypto=require('node:crypto');
 const cases=require('../server/daily-pool.cjs');
 const answerAliases=require('../assets/answer-aliases.js');
+const spoilerGuard=require('../assets/clue-safety.js');
+const safeCases=spoilerGuard.clean(cases,answerAliases);
 const secret=process.env.CLUE5_DAILY_SECRET;
 const START='2026-11-15';
 const n=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
 const signed=s=>crypto.createHmac('sha256',secret).update(s).digest();
 const dateKey=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const ordinal=s=>{const [y,m,d]=s.split('-').map(Number);return Math.floor(Date.UTC(y,m-1,d)/86400000)};
-const categories=[...new Set(cases.map(c=>c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1]))];
+const categories=[...new Set(safeCases.map(c=>c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1]))];
 function schedule(){
  const buckets=Object.fromEntries(categories.map(g=>[g,[]]));
- for(const c of cases){let g=c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1];if(buckets[g])buckets[g].push(c);}
+ for(const c of safeCases){let g=c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1];if(buckets[g])buckets[g].push(c);}
  for(const g of categories)buckets[g].sort((a,b)=>Buffer.compare(signed('case:'+a[0]),signed('case:'+b[0])));
- const quota=Object.fromEntries(categories.map(g=>[g,730*buckets[g].length/cases.length]));
+ const quota=Object.fromEntries(categories.map(g=>[g,safeCases.length*buckets[g].length/safeCases.length]));
  const count=Object.fromEntries(categories.map(g=>[g,0]));
  const seq=[],recent=[];
- while(seq.length<730){
+ while(seq.length<safeCases.length{
   let eligible=categories.filter(g=>count[g]<buckets[g].length&&!recent.slice(-4).includes(g));
   if(!eligible.length)eligible=categories.filter(g=>count[g]<buckets[g].length);
   eligible.sort((a,b)=>(count[a]+0.5)/quota[a]-(count[b]+0.5)/quota[b]||a.localeCompare(b));
@@ -52,7 +54,7 @@ function hint(answer){
  const initials=words.map(w=>w[0].toUpperCase()).join(' · ');
  return words.length===1?'Final evidence: The name begins with '+initials+' and has '+label.replace(/[^a-zA-Z0-9]/g,'').length+' letters.':'Final evidence: The answer has '+words.length+' words, with initials '+initials+'.';
 }
-function cluesFor(c){const clues=c[2].slice();const answer=n(c[0].replace(/^(the|a|an)\s+/i,''));if(answer.length>=5&&n(clues[4]).includes(answer))clues[4]=hint(c[0]);return clues;}
+function cluesFor(c){return c[2].slice();}
 function answerObj(session,c){
  const complete=session.done;
  return {day:session.day,category:c[1],caseLabel:'DAILY DOSSIER',clue:session.clue,used:session.used,done:complete,won:session.won,score:session.score,clues:cluesFor(c).slice(0,session.clue),answer:complete?c[0]:null,token:encrypt(session)};
