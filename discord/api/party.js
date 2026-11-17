@@ -65,7 +65,20 @@ export default async function handler(req,res){
    }
    if(row.expires_at&&Date.parse(row.expires_at)<Date.now())return res.status(410).json({error:'Party room expired; launch a new Discord Activity'});
    const members={...(row.players||{})};
-   if(body.action==='state'){if(!members[who.id])return res.status(403).json({error:'Join the party before viewing it'});return res.status(200).json(publicState(row,who.id));}
+   if(body.action==='state'){
+    if(!members[who.id])return res.status(403).json({error:'Join the party before viewing it'});
+    // First authenticated poll after the time limit atomically finishes the round.
+    if(!row.ended&&Date.now()-Date.parse(row.started_at)>180000){
+     const done=await db('PATCH',query(id)+'&version=eq.'+row.version,{ended:true,version:row.version+1},'return=representation');
+     if(done.length){
+      let warning='';
+      try{await postResult(who.channel,'party:'+id+':round:'+row.round,partyResult(row.round,done[0].players));}
+      catch(err){warning='Round complete, but channel posting failed: '+String(err.message||'Bot permission error');}
+      return res.status(200).json({...publicState(done[0],who.id),...(warning?{postWarning:warning}:{})});
+     }
+    }
+    return res.status(200).json(publicState(row,who.id));
+   }
    let patch={};
    if(body.action==='join'){
     if(!members[who.id]){
