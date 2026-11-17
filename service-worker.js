@@ -1,5 +1,5 @@
 /* Clue5 PWA: local practice works offline; private daily API stays online-only. */
-const CACHE='clue5-static-v1';
+const CACHE='clue5-static-v2';
 const SHELL=['/','/index.html','/data/practice.js','/assets/noir-office.svg','/favicon.png?v=3','/manifest.webmanifest','/icons/clue5-192.svg','/icons/clue5-512.svg','/icons/clue5-maskable.svg'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
@@ -18,6 +18,14 @@ self.addEventListener('fetch',event=>{
    if(res.ok){const clone=res.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put('/',clone)));}
    return res;
   }).catch(async()=>await caches.match('/')||Response.error()));
+  return;
+ }
+ // Always fetch fresh practice content while online so new cases appear automatically.
+ if(url.pathname==='/data/practice.js'){
+  event.respondWith(fetch(req).then(res=>{
+   if(res.ok){const clone=res.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put('/data/practice.js',clone)));}
+   return res;
+  }).catch(async()=>await caches.match('/data/practice.js')||Response.error()));
   return;
  }
  if(SHELL.some(path=>url.pathname===path.split('?')[0])){
