@@ -51,6 +51,10 @@
    const a=key(item);
    if(!a)continue;
    if(q===a||keywordMatch(guess,item))return true;
+   // Preserve Roman numeral identity, especially in wars, monarchs and sequels.
+   // A one-character difference between II and III must never count as a typo.
+   const romans=s=>words(s).split(' ').filter((v,i,arr)=>/^(?:ii|iii|iv|vi|vii|viii|ix|xi|xii)$/.test(v)||(/^(?:i|v|x)$/.test(v)&&i>0&&i===arr.length-1)).join('|');
+   if(romans(guess)!==romans(item))continue;
    // Never fuzzy-match distinct years, dates, numbered sequels or similar numeric facts.
    if((q.match(/[0-9]+/g)||[]).join('|')!==(a.match(/[0-9]+/g)||[]).join('|'))continue;
    if(swap(q,a))return true;
