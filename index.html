@@ -507,7 +507,7 @@ $("reveal").onclick=()=>{if(!state||state.done||state.clue>=5)return;if(state.da
  if(window.Clue5ShareCard){
   try{
    const outcome=await window.Clue5ShareCard.share(state,report);
-   $("shareStatus").textContent=outcome==='shared'?'Case report shared with a clickable clue5.io link.':outcome==='cancelled'?'Share cancelled.':'Result card downloaded. Share the image and paste the copied clue5.io message.';
+   $("shareStatus").textContent=outcome==='copied-image'?'Result card and clue5.io link copied! Paste into a message.':outcome==='copied-text'?'Case report and clue5.io link copied! This browser cannot copy the card image.':outcome==='shared'?'Case report shared.':outcome==='cancelled'?'Share cancelled.':'Case report ready.';
    return;
   }catch(e){console.warn('Clue5 image sharing unavailable',e);}
  }
