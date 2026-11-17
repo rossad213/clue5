@@ -73,47 +73,29 @@ async function render(s){
  const dataURL=canvas.toDataURL('image/png');
  return {canvas,dataURL,blob:await new Promise(ok=>canvas.toBlob(ok,'image/png'))};
 }
-async function share(s,report){
- // Clipboard sharing is preferred: never force a file download.
- // Keep the native Share Sheet as a fallback where clipboard image support is absent.
- const message=report.includes(URL)?report:report+'\nPlay: '+URL;
- if(navigator.clipboard&&typeof navigator.clipboard.write==='function'&&typeof ClipboardItem!=='undefined'){
-  try{
-   // Start clipboard.write immediately within the user's click gesture.
-   // Deferring image rendering as a promise preserves clipboard permission on Safari.
-   const imagePromise=render(s).then(result=>{
-    if(!result.blob)throw new Error('Image rendering failed');
-    return result.blob;
-   });
-   const htmlPromise=imagePromise.then(blob=>new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>resolve(new Blob([
-     '<div><img alt="Clue5 result card" width="800" src="'+reader.result+'">'+
-     '<p><a href="'+URL+'">Play Clue5 at '+URL+'</a></p></div>'
-    ],{type:'text/html'}));
-    reader.onerror=()=>reject(reader.error);
-    reader.readAsDataURL(blob);
-   }));
-   await navigator.clipboard.write([new ClipboardItem({
-    'image/png':imagePromise,
-    'text/html':htmlPromise,
-    'text/plain':Promise.resolve(new Blob([message],{type:'text/plain'}))
-   })]);
-   return 'copied-image';
-  }catch(error){
-   console.warn('Rich clipboard unsupported by browser or destination',error);
-  }
- }
- // Fallback copies the complete readable text with a clickable URL. No downloads.
+function resultLink(s){
+ const payload={
+  d:String(s.day||''),
+  w:Boolean(s.won),t:Boolean(s.daily),
+  c:Number(s.clue),u:Number(s.used),p:Number(s.score)
+ };
+ // Only public spoiler-free result values; never include the case answer or session token.
+ const encoded=btoa(JSON.stringify(payload)).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+ return URL+'/result?r='+encoded;
+}
+async function share(s){
+ const url=resultLink(s);
+ // Put ONLY the URL on the clipboard. iMessage creates a tappable link preview;
+ // pasting an image on the clipboard prevents iMessage from using the URL.
  if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
-  try{await navigator.clipboard.writeText(message);return 'copied-text'}
-  catch(error){console.warn('Text clipboard unavailable',error)}
+  try{await navigator.clipboard.writeText(url);return 'copied-link'}
+  catch(error){console.warn('Unable to copy Clue5 link',error)}
  }
  if(navigator.share){
-  try{await navigator.share({title:'Clue5 Case Report',text:message});return 'shared'}
+  try{await navigator.share({title:'Clue5 Result',url});return 'shared'}
   catch(error){if(error.name==='AbortError')return 'cancelled'}
  }
- throw new Error('Clipboard not available');
+ return {manual:url};
 }
-window.Clue5ShareCard={render,share,url:URL};
+window.Clue5ShareCard={render,share,resultLink,url:URL};
 })();
