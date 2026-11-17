@@ -15,7 +15,7 @@ export async function verifiedActivity(req,instanceId){
  if(!user?.id||!members.map(String).includes(String(user.id)))throw Error('Player is not in this Activity');
  const channel=String(activity.location?.channel_id||activity.channel_id||'');
  if(!/^\d{15,22}$/.test(channel))throw Error('Activity has no writable channel');
- return {userId:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40),channel};
+ return {userId:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40),channel,locationKind:activity.location?.kind||'gc'};
 }
 export async function postResult(channel,key,body){
  const nonce=createHash('sha256').update('clue5:'+key).digest('hex').slice(0,25);
