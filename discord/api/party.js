@@ -2,6 +2,7 @@
 // Authentication is verified with Discord on every request; no guesses or answers leak before case completion.
 import spoilerGuard from '../lib/clue-safety.cjs';
 import answerAliases from '../lib/answer-aliases.cjs';
+import {postResult,partyResult} from '../lib/channel-results.js';
 const MAIN='https://clue-five-wheat.vercel.app';
 let cached=null,loaded=0;
 const normalize=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
@@ -33,7 +34,9 @@ async function checkIdentity(req,id){
  if(!instance.ok)throw Error('This Discord Activity room is not active');
  const room=await instance.json();
  if(!Array.isArray(room.users)||!room.users.includes(String(user.id)))throw Error('You are not a participant in this Discord Activity');
- return {id:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40)};
+ const channel=String(room.location?.channel_id||room.channel_id||'');
+ if(!/^\\d{15,22}$/.test(channel))throw Error('Activity channel unavailable');
+ return {id:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40),channel};
 }
 function chosen(pool,exclude=-1){let index=Math.floor(Math.random()*pool.length);if(index===exclude&&pool.length>1)index=(index+1)%pool.length;return index}
 function fresh(id,who,pool,index){const c=pool[index];return {instance_id:id,round:1,case_index:index,category:c[1],answer:c[0],clues:c[2],aliases:c[3]||[],players:{[who.id]:{name:who.name,score:0,used:0,solved:false}},host_id:who.id,clue_count:1,ended:false,started_at:new Date().toISOString(),expires_at:new Date(Date.now()+10800000).toISOString(),version:0}}
@@ -104,7 +107,15 @@ export default async function handler(req,res){
    }
    if(!Object.keys(patch).length)return res.status(200).json(publicState(row,who.id));
    const updated=await db('PATCH',query(id)+'&version=eq.'+row.version,{...patch,version:row.version+1},'return=representation');
-   if(updated.length)return res.status(200).json(publicState(updated[0],who.id));
+   if(updated.length){
+    let warning='';
+    // Only the winning state mutation emits the round summary, not every poll.
+    if(!row.ended&&updated[0].ended&&['guess','answer'].includes(body.action)){
+     try{await postResult(who.channel,'party:'+id+':round:'+row.round,partyResult(row.round,updated[0].players));}
+     catch(error){warning='Round complete, but channel posting failed: '+String(error.message||'Bot permission error');}
+    }
+    return res.status(200).json({...publicState(updated[0],who.id),...(warning?{postWarning:warning}:{})});
+   }
   }
   return res.status(409).json({error:'The room is busy. Try again.'});
  }catch(err){return res.status(400).json({error:String(err.message||'Party unavailable').slice(0,180)})}
