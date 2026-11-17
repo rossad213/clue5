@@ -41,7 +41,7 @@
  function mergeRecords(remote,local){
   const r=remote&&typeof remote==='object'?remote:{},l=local&&typeof local==='object'?local:{};
   const daily={...(r.daily||{})};for(const [day,rec] of Object.entries(l.daily||{})){
-   if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(day)||!safeDaily(rec))continue;
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!safeDaily(rec))continue;
    const old=safeDaily(daily[day]);const oldProgress=(old?.done?100:0)+Number(old?.clue||0)+Number(old?.used||0);
    const newProgress=(rec.done?100:0)+Number(rec.clue||0)+Number(rec.used||0);
    if(!old||newProgress>=oldProgress)daily[day]=rec;
