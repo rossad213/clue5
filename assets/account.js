@@ -87,12 +87,17 @@
  function draw(mode){
   const body=document.getElementById('accountBody');if(!body)return;
   const tabs='<div class="account-tabs"><button type="button" data-page="account" class="'+(mode==='account'?'selected':'')+'">Account</button><button type="button" data-page="settings" class="'+(mode==='settings'?'selected':'')+'">Settings</button></div>';
+  if(mode==='recovery'){
+   body.innerHTML='<p class="account-help">Choose a new password for your Clue5 account.</p><form id="clue5ResetForm" class="account-form"><label for="clue5NewPassword">New password</label><input id="clue5NewPassword" type="password" minlength="6" required autocomplete="new-password"><button type="submit" class="account-action">Update password</button></form>';
+   document.getElementById('clue5ResetForm').onsubmit=async e=>{e.preventDefault();try{const token=await activeToken();if(!token)throw Error('Password reset link expired. Request another email.');const password=document.getElementById('clue5NewPassword').value;const r=await fetch(ROOT+'/auth/v1/user',{method:'PUT',headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({password})});if(!r.ok)throw Error('Could not update password ('+r.status+')');draw('account');notify('Password updated. Your account is ready.')}catch(err){notify(err.message,true)}};
+   return;
+  }
   if(mode==='settings'){
    body.innerHTML=tabs+'<p class="account-help">You can change these settings without creating an account.</p>'+
     '<label class="account-toggle"><span>Reduce animations<small>Minimize transitions and moving effects.</small></span><input id="settingReduced" type="checkbox" '+(pref.reducedMotion?'checked':'')+'></label>'+
     '<label class="account-toggle"><span>Automatic cloud sync<small>Only applies when signed in. Guest records remain on this browser.</small></span><input id="settingSync" type="checkbox" '+(pref.autoSync===false?'':'checked')+'></label>'+
     '<button class="account-action secondary" id="settingExport" type="button">Download my progress backup</button>'+
-    '<button class="account-action secondary" id="settingStats" type="button">View my statistics</button>'+
+    '<button class="account-action secondary" id="settingStats" type="button">View my archive</button>'+
     '<p class="account-help">Your existing guest records are preserved when you create an account or sign in. You can play without signing in.</p>';
    document.getElementById('settingReduced').onchange=e=>{pref.reducedMotion=e.target.checked;savePref();setMotion()};
    document.getElementById('settingSync').onchange=e=>{pref.autoSync=e.target.checked;savePref();if(pref.autoSync)syncNow(true)};
@@ -133,7 +138,7 @@
     const email=document.getElementById('accountEmail').value.trim(),password=document.getElementById('accountPassword').value;
     if(!email||password.length<6){notify('Enter a valid email and a password of at least six characters.',true);return}
     try{
-     const result=await request('signup',{method:'POST',body:JSON.stringify({email,password})});
+     const result=await request('signup?redirect_to='+encodeURIComponent('https://clue5.io/'),{method:'POST',body:JSON.stringify({email,password})});
      if(result.access_token){persistSession({...result,expires_at:Math.floor(Date.now()/1000)+Number(result.expires_in||3600)});draw('account');await syncNow(true)}
      else notify('Check your email for a confirmation link, then return here to sign in.');
     }catch(e){notify(e.message,true)}
@@ -141,7 +146,7 @@
    document.getElementById('accountRecover').onclick=async()=>{
     const email=document.getElementById('accountEmail').value.trim();
     if(!email){notify('Enter your email address first.',true);return}
-    try{await request('recover',{method:'POST',body:JSON.stringify({email})});notify('If this email has an account, a password reset email has been sent.')}
+    try{await request('recover?redirect_to='+encodeURIComponent('https://clue5.io/'),{method:'POST',body:JSON.stringify({email})});notify('If this email has an account, a password reset email has been sent.')}
     catch(e){notify(e.message,true)}
    };
   }
@@ -149,6 +154,18 @@
  }
  button.onclick=()=>open('account');settingsButton.onclick=()=>open('settings');
  try{const saved=JSON.parse(localStorage.getItem(AUTH));if(saved?.access_token&&saved?.refresh_token&&saved?.user?.id)persistSession(saved)}catch{}
+ // Supabase confirmation/recovery redirect tokens arrive in the URL fragment, not the query.
+ // Strip them immediately so no other links or screenshots disclose credentials.
+ try{
+  const hash=new URLSearchParams(location.hash.replace(/^#/,'')),access=hash.get('access_token'),refresh=hash.get('refresh_token'),type=hash.get('type');
+  if(access&&refresh){
+   history.replaceState(null,'',location.pathname+location.search);
+   request('user',{method:'GET',headers:{Authorization:'Bearer '+access}}).then(user=>{
+    persistSession({access_token:access,refresh_token:refresh,user,expires_at:Math.floor(Date.now()/1000)+Math.max(60,Number(hash.get('expires_in')||3600))});
+    if(type==='recovery')open('recovery');else if(pref.autoSync!==false)syncNow();
+   }).catch(()=>{});
+  }
+ }catch{}
  renderButton();
  if(session)activeToken().then(t=>{if(t&&pref.autoSync!==false)syncNow()}).catch(()=>{});
 })();
