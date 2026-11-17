@@ -166,7 +166,7 @@ function image(x){
  '/':['M8 0 L0 10'],
  '.':['M0 10 L1 10']
  };
- const parsePath=path=>{const t=path.match(/[MLQZ]|-?\\d+(?:\\.\\d+)?/g),segs=[];let i=0,x=0,y=0,startX=0,startY=0;while(i<t.length){const cmd=t[i++];if(cmd==='M'){x=Number(t[i++]);y=Number(t[i++]);startX=x;startY=y;}else if(cmd==='L'){let nx=Number(t[i++]),ny=Number(t[i++]);segs.push([x,y,nx,ny]);x=nx;y=ny;}else if(cmd==='Q'){let cx=Number(t[i++]),cy=Number(t[i++]),nx=Number(t[i++]),ny=Number(t[i++]);let px=x,py=y;for(let k=1;k<=12;k++){let a=k/12,b=1-a,tx=b*b*x+2*b*a*cx+a*a*nx,ty=b*b*y+2*b*a*cy+a*a*ny;segs.push([px,py,tx,ty]);px=tx;py=ty;}x=nx;y=ny;}else if(cmd==='Z'){segs.push([x,y,startX,startY]);x=startX;y=startY;}}return segs;};
+ const parsePath=path=>{const t=path.match(/[MLQZ]|-?[0-9]+(?:[.][0-9]+)?/g),segs=[];let i=0,x=0,y=0,startX=0,startY=0;while(i<t.length){const cmd=t[i++];if(cmd==='M'){x=Number(t[i++]);y=Number(t[i++]);startX=x;startY=y;}else if(cmd==='L'){let nx=Number(t[i++]),ny=Number(t[i++]);segs.push([x,y,nx,ny]);x=nx;y=ny;}else if(cmd==='Q'){let cx=Number(t[i++]),cy=Number(t[i++]),nx=Number(t[i++]),ny=Number(t[i++]);let px=x,py=y;for(let k=1;k<=12;k++){let a=k/12,b=1-a,tx=b*b*x+2*b*a*cx+a*a*nx,ty=b*b*y+2*b*a*cy+a*a*ny;segs.push([px,py,tx,ty]);px=tx;py=ty;}x=nx;y=ny;}else if(cmd==='Z'){segs.push([x,y,startX,startY]);x=startX;y=startY;}}return segs;};
  const pathCache={};for(const [c,paths] of Object.entries(FONT_LINES))pathCache[c]=paths.flatMap(parsePath);
  const softText=(str,x,y,size,color,maxWidth=760,weight=0.92)=>{
   const unit=size/12,spacing=size*0.20,lineWidth=unit*weight,letterWidth=unit*10+spacing;
