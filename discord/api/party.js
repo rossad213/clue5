@@ -3,6 +3,7 @@
 import spoilerGuard from '../lib/clue-safety.cjs';
 import answerAliases from '../lib/answer-aliases.cjs';
 import {postResult,partyResult} from '../lib/channel-results.js';
+import {claimLaunch,postInteractionResult} from '../lib/launch-tokens.js';
 const MAIN='https://clue-five-wheat.vercel.app';
 let cached=null,loaded=0;
 const normalize=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
@@ -36,7 +37,15 @@ async function checkIdentity(req,id){
  if(!Array.isArray(room.users)||!room.users.includes(String(user.id)))throw Error('You are not a participant in this Discord Activity');
  const channel=String(room.location?.channel_id||room.channel_id||'');
  if(!/^\d{15,22}$/.test(channel))throw Error('Activity channel unavailable');
- return {id:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40),channel};
+ return {id:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40),channel,kind:room.location?.kind||'gc'};
+}
+async function publishRound(who,id,round,players){
+ const message=partyResult(round,players);
+ if(who.kind==='pc'){
+  const launchToken=await claimLaunch(who.channel,who.id);
+  if(!launchToken)throw Error('Discord DM result window expired; launch /clue5 again for the next round');
+  await postInteractionResult(launchToken,message);
+ }else await postResult(who.channel,'party:'+id+':round:'+round,message);
 }
 function chosen(pool,exclude=-1){let index=Math.floor(Math.random()*pool.length);if(index===exclude&&pool.length>1)index=(index+1)%pool.length;return index}
 function fresh(id,who,pool,index){const c=pool[index];return {instance_id:id,round:1,case_index:index,category:c[1],answer:c[0],clues:c[2],aliases:c[3]||[],players:{[who.id]:{name:who.name,score:0,used:0,solved:false}},host_id:who.id,clue_count:1,ended:false,started_at:new Date().toISOString(),expires_at:new Date(Date.now()+10800000).toISOString(),version:0}}
@@ -72,7 +81,7 @@ export default async function handler(req,res){
      const done=await db('PATCH',query(id)+'&version=eq.'+row.version,{ended:true,version:row.version+1},'return=representation');
      if(done.length){
       let warning='';
-      try{await postResult(who.channel,'party:'+id+':round:'+row.round,partyResult(row.round,done[0].players));}
+      try{await publishRound(who,id,row.round,done[0].players);}
       catch(err){warning='Round complete, but channel posting failed: '+String(err.message||'Bot permission error');}
       return res.status(200).json({...publicState(done[0],who.id),...(warning?{postWarning:warning}:{})});
      }
@@ -124,7 +133,7 @@ export default async function handler(req,res){
     let warning='';
     // Only the winning state mutation emits the round summary, not every poll.
     if(!row.ended&&updated[0].ended&&['guess','answer'].includes(body.action)){
-     try{await postResult(who.channel,'party:'+id+':round:'+row.round,partyResult(row.round,updated[0].players));}
+     try{await publishRound(who,id,row.round,updated[0].players);}
      catch(error){warning='Round complete, but channel posting failed: '+String(error.message||'Bot permission error');}
     }
     return res.status(200).json({...publicState(updated[0],who.id),...(warning?{postWarning:warning}:{})});
