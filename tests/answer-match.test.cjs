@@ -1,0 +1,24 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {matches}=require('../assets/answer-match.js');
+const aliases=require('../assets/answer-aliases.js');
+function check(label,guess,candidates,expected){assert.equal(matches(guess,candidates),expected,label);}
+const crisis=['2008 Financial Crisis',...(aliases['2008 Financial Crisis']||[])];
+check('official answer','2008 Financial Crisis',crisis,true);
+check('known alternative','The Great Recession',crisis,true);
+check('another verified equivalent','2008 recession',crisis,true);
+check('alternative word order','crisis financial of 2008',crisis,true);
+check('wrong event same year','2008 Olympics',crisis,false);
+check('vague answer','recession',crisis,false);
+check('full identifying keyword permutation','Liberty statue',['Statue of Liberty'],true);
+check('missing keyword','New York statue',['Statue of Liberty'],false);
+check('extra conflicting place','Statue of Liberty in Boston',['Statue of Liberty'],false);
+check('title word order','City of New York',['New York City'],true);
+check('roman numeral distinction','World War III',['World War II'],false);
+check('different numbered answer','World War 1',['World War 2'],false);
+check('different year','2018 recession',crisis,false);
+check('similar but wrong country','Iran',['Iraq'],false);
+check('swapped-letter typo','Finanical Crisis',['Financial Crisis'],true);
+check('known country synonym','UK',['United Kingdom',...(aliases['United Kingdom']||[])],true);
+check('no subset match','financial',['2008 Financial Crisis'],false);
+console.log('Clue5 answer matcher checks passed');
