@@ -74,19 +74,46 @@ async function render(s){
  return {canvas,dataURL,blob:await new Promise(ok=>canvas.toBlob(ok,'image/png'))};
 }
 async function share(s,report){
- const asset=await render(s);
- if(!asset.blob)throw new Error('Unable to create share image');
- const file=new File([asset.blob],'clue5-'+(s.day||'case')+'.png',{type:'image/png'});
- const message='Play Clue5: '+URL;
- if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-  try{await navigator.share({title:'Clue5 Case Report',text:message,files:[file]});return 'shared'}
-  catch(e){if(e.name==='AbortError')return 'cancelled';}
+ // Clipboard sharing is preferred: never force a file download.
+ // Keep the native Share Sheet as a fallback where clipboard image support is absent.
+ const message=report.includes(URL)?report:report+'\nPlay: '+URL;
+ if(navigator.clipboard&&typeof navigator.clipboard.write==='function'&&typeof ClipboardItem!=='undefined'){
+  try{
+   // Start clipboard.write immediately within the user's click gesture.
+   // Deferring image rendering as a promise preserves clipboard permission on Safari.
+   const imagePromise=render(s).then(result=>{
+    if(!result.blob)throw new Error('Image rendering failed');
+    return result.blob;
+   });
+   const htmlPromise=imagePromise.then(blob=>new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(new Blob([
+     '<div><img alt="Clue5 result card" width="800" src="'+reader.result+'">'+
+     '<p><a href="'+URL+'">Play Clue5 at '+URL+'</a></p></div>'
+    ],{type:'text/html'}));
+    reader.onerror=()=>reject(reader.error);
+    reader.readAsDataURL(blob);
+   }));
+   await navigator.clipboard.write([new ClipboardItem({
+    'image/png':imagePromise,
+    'text/html':htmlPromise,
+    'text/plain':Promise.resolve(new Blob([message],{type:'text/plain'}))
+   })]);
+   return 'copied-image';
+  }catch(error){
+   console.warn('Rich clipboard unsupported by browser or destination',error);
+  }
  }
- // Desktop browsers typically cannot send image + link together. Preserve both in a manual fallback.
- const a=document.createElement('a');
- a.href=asset.dataURL;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
- try{await navigator.clipboard.writeText(report)}catch{}
- return 'downloaded';
+ // Fallback copies the complete readable text with a clickable URL. No downloads.
+ if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+  try{await navigator.clipboard.writeText(message);return 'copied-text'}
+  catch(error){console.warn('Text clipboard unavailable',error)}
+ }
+ if(navigator.share){
+  try{await navigator.share({title:'Clue5 Case Report',text:message});return 'shared'}
+  catch(error){if(error.name==='AbortError')return 'cancelled'}
+ }
+ throw new Error('Clipboard not available');
 }
 window.Clue5ShareCard={render,share,url:URL};
 })();
