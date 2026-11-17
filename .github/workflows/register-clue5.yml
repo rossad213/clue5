@@ -1,0 +1,23 @@
+name: Register Clue5 Discord Command
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Clue5 source
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Register /clue5 with Discord
+        env:
+          DISCORD_CLIENT_ID: '1572073551312322580'
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: node discord/scripts/register-clue5.mjs
