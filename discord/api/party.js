@@ -35,7 +35,7 @@ async function checkIdentity(req,id){
  const room=await instance.json();
  if(!Array.isArray(room.users)||!room.users.includes(String(user.id)))throw Error('You are not a participant in this Discord Activity');
  const channel=String(room.location?.channel_id||room.channel_id||'');
- if(!/^\\d{15,22}$/.test(channel))throw Error('Activity channel unavailable');
+ if(!/^\d{15,22}$/.test(channel))throw Error('Activity channel unavailable');
  return {id:String(user.id),name:String(user.global_name||user.username||'Detective').slice(0,40),channel};
 }
 function chosen(pool,exclude=-1){let index=Math.floor(Math.random()*pool.length);if(index===exclude&&pool.length>1)index=(index+1)%pool.length;return index}
