@@ -1,6 +1,6 @@
 // Select from the main Clue5's PUBLIC, spoiler-free practice pool; never access reserved daily cases.
-import spoilerGuard from '../../assets/clue-safety.js';
-import answerAliases from '../../assets/answer-aliases.js';
+import spoilerGuard from '../lib/clue-safety.cjs';
+import answerAliases from '../lib/answer-aliases.cjs';
 let cache=null,loaded=0;
 async function pool(){
  if(cache&&Date.now()-loaded<600000)return cache;
