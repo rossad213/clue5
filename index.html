@@ -355,6 +355,23 @@ async function playDaily(action,extra={}){
  }catch(error){$('notice').textContent=error.message;}
  finally{controls[0].disabled=!!state?.done||state?.clue>=5;controls[1].disabled=!!state?.done;controls[2].disabled=!!state?.done;if(state?.done)$('guessForm').classList.add('hidden');}
 }
+async function startArchived(day){
+ if(day===dateKey()){await start(true);return}
+ if(day<'2026-11-15'||day>dateKey())return;
+ const record=data.daily?.[day];
+ if(record?.done&&!data.dailySessions?.[day]){
+  state={c:{answer:record.answer||'Previously completed case',clues:record.cluesShown||[]},day,daily:true,remote:false,legacy:true,clue:record.clue||1,used:record.used||0,done:true,won:!!record.won,score:record.score||0,playedOn:record.playedOn||day,saved:true};
+  $('mode').textContent='ARCHIVED DAILY CASE · '+day;$('category').textContent='PREVIOUSLY COMPLETED DOSSIER';
+  render();view('game');return;
+ }
+ try{
+  const payload=await dailyFetch('open',{},day);
+  updateDaily(payload);view('game');
+ }catch(error){
+  const detail=$('caseHistoryDetail');
+  if(detail)historyText(detail,'p','Could not open this archived case: '+error.message,'history-empty');
+ }
+}
 async function start(daily){
  const day=dateKey();
  if(daily){
@@ -401,11 +418,14 @@ function describeHistory(day){
  historyText(detail,'div',new Date(day+'T12:00:00Z').toLocaleDateString('en-US',{timeZone:'UTC',weekday:'long',month:'long',day:'numeric',year:'numeric'}),'eyebrow');
  if(day>dateKey()){historyText(detail,'h4','Upcoming case');historyText(detail,'p','This investigation has not opened yet.','history-empty');return;}
  if(day<historyLaunch&&!record){historyText(detail,'h4','No archive available');historyText(detail,'p','Daily case history begins November 15, 2026.','history-empty');return;}
- const status=record?.won?'Solved':record?.done?'Unsolved':record?'In progress':day===dateKey()?'Not played yet':'Unsolved · Not played';
+ const isCatchup=!!record?.late||(!!record?.playedOn&&record.playedOn!==day);
+ const status=record?.won?(isCatchup?'Solved later · Catch-up':'Solved on the day'):record?.done?(isCatchup?'Closed later · Catch-up':'Unsolved'):record?'In progress':day===dateKey()?'Not played yet':'Missed · Available to play';
  historyText(detail,'h4',record?.answer||'Daily mystery','');
- historyText(detail,'div',status,'history-status '+(record?.won?'solved':record?.done||!record?'unsolved':'progress'));
+ historyText(detail,'div',status,'history-status '+(isCatchup?'catchup':record?.won?'solved':record?.done||!record?'unsolved':'progress'));
+ if(isCatchup)historyText(detail,'p','This was completed after its original daily date. It counts toward your archive but not your on-time streak.','history-empty');
  if(!record){
-  historyText(detail,'p',day===dateKey()?'Play today’s mystery to start your case report.':'No game was recorded for this date.','history-empty');
+  historyText(detail,'p',day===dateKey()?'Play today’s mystery to start your case report.':'This date was missed. You can investigate it now; your result will be marked as a catch-up solve.','history-empty');
+  const play=historyText(detail,'button',day===dateKey()?'PLAY TODAY’S CASE ↗':'PLAY MISSED CASE ↗','btn archive-play');play.type='button';play.onclick=()=>startArchived(day);
   return;
  }
  const metrics=historyText(detail,'div','','history-metrics');
@@ -413,6 +433,7 @@ function describeHistory(day){
   historyText(metrics,'span',name+': '+value);
  }
  if(!record.done)historyText(detail,'p','This case is still open. The answer stays hidden until you finish it.','history-empty');
+ if(!record.done){const resume=historyText(detail,'button',day===dateKey()?'CONTINUE TODAY’S CASE ↗':'CONTINUE ARCHIVED CASE ↗','btn archive-play');resume.type='button';resume.onclick=()=>startArchived(day)}
  const clues=Array.isArray(record.cluesShown)?record.cluesShown:[];
  const events=Array.isArray(record.events)?record.events:[];
  if(clues.length){
@@ -440,16 +461,17 @@ function renderHistoryCalendar(){
  for(let i=0;i<first;i++)historyText(calendar,'div','','calendar-empty');
  for(let day=1;day<=days;day++){
   const key=historyMonth+'-'+String(day).padStart(2,'0'),record=data.daily?.[key];
-  const future=key>current;
+  const future=key>current||key<historyLaunch;
   const button=historyText(calendar,'button','','case-day');
   button.type='button';button.disabled=future;button.setAttribute('aria-label',key+': '+(record?.won?'solved':record?.done?'unsolved':record?'in progress':'not played'));
-  button.classList.toggle('solved',!!record?.won);
+  button.classList.toggle('solved',!!record?.won&&!record?.late&&(!record?.playedOn||record.playedOn===key));
+  button.classList.toggle('catchup',!!record?.late||(!!record?.playedOn&&record.playedOn!==key));
   button.classList.toggle('unsolved',!record?.won&&key<current);
   button.classList.toggle('progress',!!record&&!record.done);
   button.classList.toggle('today',key===current);
   button.classList.toggle('selected',key===historySelected);
   historyText(button,'strong',String(day));
-  historyText(button,'small',record?.won?'SOLVED':record?.done?'UNSOLVED':record?'OPEN':key<current?'—':'');
+  historyText(button,'small',record?.won?(record?.late||(record?.playedOn&&record.playedOn!==key)?'LATE ✓':'SOLVED'):record?.done?'UNSOLVED':record?'OPEN':key<current&&key>=historyLaunch?'PLAY':'');
   button.onclick=()=>{historySelected=key;renderHistoryCalendar();};
  }
  if(historySelected.slice(0,7)!==historyMonth)historySelected=historyMonth+'-01';
@@ -460,7 +482,7 @@ function winStreak(){
  const now=dayOrdinal(dateKey());
  for(let i=0;i<365;i++){
   const k=new Date((now-i)*86400000).toISOString().slice(0,10);
-  if(data.daily[k]?.won)streak++;
+  if(data.daily[k]?.won&&!data.daily[k]?.late&&(!data.daily[k]?.playedOn||data.daily[k].playedOn===k))streak++;
   else if(i===0&&!data.daily[k]?.done)continue;
   else break;
  }
@@ -524,7 +546,7 @@ $("reveal").onclick=()=>{if(!state||state.done||state.clue>=5)return;if(state.da
  }
  if(navigator.share){try{await navigator.share({title:'Clue5 Case Report',text:report});$("shareStatus").textContent='Case report shared.';return;}catch(e){if(e.name==='AbortError')return;}}
  try{await navigator.clipboard.writeText(report);$("shareStatus").textContent='Spoiler-free report copied!';}catch{$("shareStatus").textContent=report;}
-};$("giveup").onclick=()=>{if(!state||state.done||!confirm("Close this case and reveal the answer?"))return;if(state.daily)playDaily("giveup");else finish(false)};$("homeLink").onclick=$("back").onclick=$("statsBack").onclick=()=>{dailyStatus();view("home")};$("daily").onclick=()=>start(true);$("practice").onclick=()=>start(false);$("statsButton").onclick=()=>{clue5Track("statistics_opened");const arr=Object.values(data.daily||{}),solved=arr.filter(x=>x.won);const total=solved.reduce((n,x)=>n+x.score,0);let last=0;for(let d=new Date();last<366;d.setDate(d.getDate()-1)){let key=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);let r=data.daily[key];if(r?.won)last++;else if(last===0&&!r)continue;else break}const vals=[["Daily cases",arr.length],["Daily wins",solved.length],["Daily points",total],["Practice cases",data.practice||0],["Avg clues",solved.length?(solved.reduce((a,x)=>a+x.clue,0)/solved.length).toFixed(1):"—"],["Recent streak",last]];$("statgrid").innerHTML=vals.map(([name,value])=>'<div class="statitem"><b>'+value+'</b><span>'+name+'</span></div>').join("");const gallery=$('badgeGallery');gallery.replaceChildren();
+};$("giveup").onclick=()=>{if(!state||state.done||!confirm("Close this case and reveal the answer?"))return;if(state.daily)playDaily("giveup");else finish(false)};$("homeLink").onclick=$("back").onclick=$("statsBack").onclick=()=>{dailyStatus();view("home")};$("daily").onclick=()=>start(true);$("practice").onclick=()=>start(false);$("statsButton").onclick=()=>{clue5Track("statistics_opened");const arr=Object.values(data.daily||{}),solved=arr.filter(x=>x.won);const total=solved.reduce((n,x)=>n+x.score,0);let last=0;for(let d=new Date();last<366;d.setDate(d.getDate()-1)){let key=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);let r=data.daily[key];if(r?.won&&!r?.late&&(!r?.playedOn||r.playedOn===key))last++;else if(last===0&&!r)continue;else break}const vals=[["Daily cases",arr.length],["Daily wins",solved.length],["Daily points",total],["Practice cases",data.practice||0],["Avg clues",solved.length?(solved.reduce((a,x)=>a+x.clue,0)/solved.length).toFixed(1):"—"],["Recent streak",last]];$("statgrid").innerHTML=vals.map(([name,value])=>'<div class="statitem"><b>'+value+'</b><span>'+name+'</span></div>').join("");const gallery=$('badgeGallery');gallery.replaceChildren();
 const achievements=[];
 if(solved.some(x=>x.clue===1))achievements.push(['✦','Eagle Eye','Solved a case on the first clue']);
 if(solved.some(x=>x.clue<=2))achievements.push(['◆','Sharp Instincts','Solved with two clues or fewer']);
