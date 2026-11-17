@@ -1,0 +1,47 @@
+{
+  "id": "/",
+  "name": "Clue5 — Five Clues. One Mystery.",
+  "short_name": "Clue5",
+  "description": "Investigate a new daily mystery using five progressive clues and six guesses. Practice with spoiler-free case archives.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#170c08",
+  "theme_color": "#170c08",
+  "orientation": "any",
+  "lang": "en",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/favicon.png?v=3",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/clue5-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/clue5-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/clue5-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
