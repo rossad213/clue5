@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /server/
+Disallow: /data/
+Disallow: /_vercel/
+Sitemap: https://clue-five-wheat.vercel.app/sitemap.xml
