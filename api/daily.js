@@ -1,6 +1,7 @@
 'use strict';
 const crypto=require('node:crypto');
 const cases=require('../server/daily-pool.cjs');
+const answerAliases=require('../assets/answer-aliases.js');
 const secret=process.env.CLUE5_DAILY_SECRET;
 const START='2026-11-15';
 const n=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
@@ -39,7 +40,7 @@ function decrypt(value){
 const editDistance=(a,b,cap)=>{if(Math.abs(a.length-b.length)>cap)return false;let row=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const next=[i];let low=i;for(let j=1;j<=b.length;j++){next[j]=Math.min(next[j-1]+1,row[j]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));low=Math.min(low,next[j]);}if(low>cap)return false;row=next;}return row[b.length]<=cap;};
 function match(guess,c){
  const q=n(guess);if(!q)return false;
- const options=[c[0],...(c[3]||[])];const plain=c[0].replace(/^(the|a|an)\s+/i,'');if(plain!==c[0])options.push(plain);
+ const options=[c[0],...(c[3]||[]),...(answerAliases[c[0]]||[])];const plain=c[0].replace(/^(the|a|an)\s+/i,'');if(plain!==c[0])options.push(plain);
  if(c[1]==='People'||c[1]==='Person'){
   const words=c[0].split(/\s+/);const last=words[words.length-1];
   if(last.length>=5&&!cases.some(x=>x!==c&&(x[1]==='People'||x[1]==='Person')&&x[0].split(/\s+/).at(-1).toLowerCase()===last.toLowerCase()))options.push(last);
