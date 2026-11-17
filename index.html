@@ -354,6 +354,74 @@ async function start(daily){
  $('category').textContent='CASE #'+String(chosen.id).padStart(3,'0')+' · '+chosen.category.toUpperCase();
  $('guess').value='';render();view('game');
 }
+// Clickable daily-case archive, using only locally recorded information.
+let historyMonth=dateKey().slice(0,7);
+let historySelected=dateKey();
+const historyLaunch='2026-11-15';
+const historyText=(parent,tag,value,cls)=>{
+ const element=document.createElement(tag);element.textContent=value;
+ if(cls)element.className=cls;parent.append(element);return element;
+};
+function describeHistory(day){
+ const detail=$('caseHistoryDetail');detail.replaceChildren();
+ const record=data.daily?.[day];
+ historyText(detail,'div',new Date(day+'T12:00:00Z').toLocaleDateString('en-US',{timeZone:'UTC',weekday:'long',month:'long',day:'numeric',year:'numeric'}),'eyebrow');
+ if(day>dateKey()){historyText(detail,'h4','Upcoming case');historyText(detail,'p','This investigation has not opened yet.','history-empty');return;}
+ if(day<historyLaunch&&!record){historyText(detail,'h4','No archive available');historyText(detail,'p','Daily case history begins November 15, 2026.','history-empty');return;}
+ const status=record?.won?'Solved':record?.done?'Unsolved':record?'In progress':day===dateKey()?'Not played yet':'Unsolved · Not played';
+ historyText(detail,'h4',record?.answer||'Daily mystery','');
+ historyText(detail,'div',status,'history-status '+(record?.won?'solved':record?.done||!record?'unsolved':'progress'));
+ if(!record){
+  historyText(detail,'p',day===dateKey()?'Play today’s mystery to start your case report.':'No game was recorded for this date.','history-empty');
+  return;
+ }
+ const metrics=historyText(detail,'div','','history-metrics');
+ for(const [name,value] of [['Clues revealed',String(record.clue||1)+'/5'],['Incorrect guesses',String(record.used||0)+'/6'],['Points',String(record.score||0)]]){
+  historyText(metrics,'span',name+': '+value);
+ }
+ if(!record.done)historyText(detail,'p','This case is still open. The answer stays hidden until you finish it.','history-empty');
+ const clues=Array.isArray(record.cluesShown)?record.cluesShown:[];
+ const events=Array.isArray(record.events)?record.events:[];
+ if(clues.length){
+  historyText(detail,'div','EVIDENCE REVEALED','eyebrow');
+  const cluesList=historyText(detail,'ol','');
+  clues.forEach((clue,index)=>{historyText(cluesList,'li','Clue '+(index+1)+': '+clue);});
+ }else historyText(detail,'p','Earlier records did not save individual clue wording.','history-empty');
+ if(events.length){
+  historyText(detail,'div','DEDUCTION LOG','eyebrow');
+  const timeline=historyText(detail,'ol','');
+  for(const event of events){
+   if(event.kind==='guess')historyText(timeline,'li','“'+event.value+'” — '+(event.correct?'Correct!':'Incorrect')+(event.clue?' (after clue '+event.clue+')':''),event.correct?'event-good':'event-bad');
+   else if(event.kind==='clue')historyText(timeline,'li','Revealed clue '+event.index,'event-hint');
+   else if(event.kind==='giveup')historyText(timeline,'li','Case closed without a solution','event-bad');
+  }
+ }else historyText(detail,'p','No individual guesses were saved for this case. Detailed tracking starts with this update.','history-empty');
+}
+function renderHistoryCalendar(){
+ const [year,month]=historyMonth.split('-').map(Number);
+ const current=dateKey();const calendar=$('caseCalendar');calendar.replaceChildren();
+ $('historyMonth').textContent=new Date(Date.UTC(year,month-1,1)).toLocaleDateString('en-US',{month:'long',year:'numeric',timeZone:'UTC'});
+ $('historyNext').disabled=historyMonth>=current.slice(0,7);
+ const first=new Date(Date.UTC(year,month-1,1)).getUTCDay();
+ const days=new Date(Date.UTC(year,month,0)).getUTCDate();
+ for(let i=0;i<first;i++)historyText(calendar,'div','','calendar-empty');
+ for(let day=1;day<=days;day++){
+  const key=historyMonth+'-'+String(day).padStart(2,'0'),record=data.daily?.[key];
+  const future=key>current;
+  const button=historyText(calendar,'button','','case-day');
+  button.type='button';button.disabled=future;button.setAttribute('aria-label',key+': '+(record?.won?'solved':record?.done?'unsolved':record?'in progress':'not played'));
+  button.classList.toggle('solved',!!record?.won);
+  button.classList.toggle('unsolved',!record?.won&&key<current);
+  button.classList.toggle('progress',!!record&&!record.done);
+  button.classList.toggle('today',key===current);
+  button.classList.toggle('selected',key===historySelected);
+  historyText(button,'strong',String(day));
+  historyText(button,'small',record?.won?'SOLVED':record?.done?'UNSOLVED':record?'OPEN':key<current?'—':'');
+  button.onclick=()=>{historySelected=key;renderHistoryCalendar();};
+ }
+ if(historySelected.slice(0,7)!==historyMonth)historySelected=historyMonth+'-01';
+ describeHistory(historySelected);
+}
 function winStreak(){
  let streak=0;
  const now=dayOrdinal(dateKey());
@@ -424,7 +492,19 @@ if(winStreak()>=3)achievements.push(['★','On a Roll','Three consecutive daily 
 if(winStreak()>=7)achievements.push(['♛','Unstoppable','Seven consecutive daily wins']);
 if(solved.length>=10)achievements.push(['✧','Case Veteran','Ten daily cases solved']);
 if((data.practice||0)>=25)achievements.push(['✶','Archive Explorer','Completed 25 practice cases']);
-if(achievements.length)achievements.forEach(item=>gallery.append(badgeElement(item)));else gallery.textContent='Solve cases to unlock detective honors.';view("stats")};$("exportProgress").onclick=()=>{
+if(achievements.length)achievements.forEach(item=>gallery.append(badgeElement(item)));else gallery.textContent='Solve cases to unlock detective honors.';historyMonth=dateKey().slice(0,7);historySelected=dateKey();renderHistoryCalendar();view("stats")};$('historyPrev').onclick=()=>{
+ const [year,month]=historyMonth.split('-').map(Number);
+ const prior=new Date(Date.UTC(year,month-2,1));
+ historyMonth=prior.toISOString().slice(0,7);
+ historySelected=historyMonth+'-01';renderHistoryCalendar();
+};
+$('historyNext').onclick=()=>{
+ const [year,month]=historyMonth.split('-').map(Number);
+ const next=new Date(Date.UTC(year,month,1)).toISOString().slice(0,7);
+ if(next>dateKey().slice(0,7))return;
+ historyMonth=next;historySelected=historyMonth===dateKey().slice(0,7)?dateKey():historyMonth+'-01';renderHistoryCalendar();
+};
+$("exportProgress").onclick=()=>{
  const payload={app:'clue5',version:2,exportedAt:new Date().toISOString(),data:{daily:data.daily||{},dailySessions:data.dailySessions||{},practice:data.practice||0,practiceSeen:data.practiceSeen||[]}};
  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='clue5-records-'+dateKey()+'.json';link.click();URL.revokeObjectURL(url);
