@@ -88,7 +88,7 @@
   const body=document.getElementById('accountBody');if(!body)return;
   const tabs='<div class="account-tabs"><button type="button" data-page="account" class="'+(mode==='account'?'selected':'')+'">Account</button><button type="button" data-page="settings" class="'+(mode==='settings'?'selected':'')+'">Settings</button></div>';
   if(mode==='recovery'){
-   body.innerHTML='<p class="account-help">Choose a new password for your Clue5 account.</p><form id="clue5ResetForm" class="account-form"><label for="clue5NewPassword">New password</label><input id="clue5NewPassword" type="password" minlength="6" required autocomplete="new-password"><button type="submit" class="account-action">Update password</button></form>';
+   body.innerHTML='<p class="account-help">Choose a new password for your Clue5 account.</p><form id="clue5ResetForm" class="account-form"><label for="clue5NewPassword">New password</label><span class="account-password-wrap"><input id="clue5NewPassword" type="password" minlength="6" required autocomplete="new-password"><button class="account-password-eye" type="button" data-toggle-password="clue5NewPassword" aria-label="Show password" aria-pressed="false" title="Show password">👁</button></span><button type="submit" class="account-action">Update password</button></form>';
    document.getElementById('clue5ResetForm').onsubmit=async e=>{e.preventDefault();try{const token=await activeToken();if(!token)throw Error('Password reset link expired. Request another email.');const password=document.getElementById('clue5NewPassword').value;const r=await fetch(ROOT+'/auth/v1/user',{method:'PUT',headers:{apikey:KEY,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({password})});if(!r.ok)throw Error('Could not update password ('+r.status+')');draw('account');notify('Password updated. Your account is ready.')}catch(err){notify(err.message,true)}};
    return;
   }
@@ -121,7 +121,7 @@
   }else{
    body.innerHTML=tabs+'<p class="account-help">Keep playing as a guest, or sign in to save progress across your devices.</p>'+
     '<form id="clue5AuthForm" class="account-form"><label for="accountEmail">Email</label><input id="accountEmail" type="email" required autocomplete="email" maxlength="254" placeholder="you@example.com">'+
-    '<label for="accountPassword">Password</label><input id="accountPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters">'+
+    '<label for="accountPassword">Password</label><span class="account-password-wrap"><input id="accountPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters"><button class="account-password-eye" type="button" data-toggle-password="accountPassword" aria-label="Show password" aria-pressed="false" title="Show password">👁</button></span>'+
     '<button class="account-action" type="submit" id="accountLoginSubmit">Sign in</button></form>'+
     '<div class="account-links"><button type="button" id="accountSignUp">Create an account</button><button type="button" id="accountRecover">Forgot password?</button></div>'+
     '<p class="account-help">No account required. Current guest history will be merged with your account after sign-in.</p>';
@@ -150,6 +150,19 @@
     catch(e){notify(e.message,true)}
    };
   }
+  body.querySelectorAll('[data-toggle-password]').forEach(button=>{
+   button.onclick=()=>{
+    const field=document.getElementById(button.dataset.togglePassword);
+    if(!field)return;
+    const showing=field.type==='password';
+    field.type=showing?'text':'password';
+    button.setAttribute('aria-label',showing?'Hide password':'Show password');
+    button.setAttribute('aria-pressed',String(showing));
+    button.title=showing?'Hide password':'Show password';
+    button.classList.toggle('showing',showing);
+    field.focus({preventScroll:true});
+   };
+  });
   body.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{draw(b.dataset.page);notify('')});
  }
  button.onclick=()=>open('account');settingsButton.onclick=()=>open('settings');
