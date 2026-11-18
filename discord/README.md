@@ -58,3 +58,11 @@ Separate Vercel project: clue5-discord (root directory: discord/). Existing Clue
 - The callback is claimed once; no continuous polling or public exposure of the interaction token. Scores never include the puzzle answer.
 - The dedicated Supabase table is protected by RLS, revoked `anon`/`authenticated` grants, and server-only `service_role` access. Periodic cleanup of expired callback rows is recommended.
 - If posting fails, the Activity shows a warning instead of throwing away the result.
+
+## One Daily Mystery per Discord account
+- A player may attempt the **Daily Mystery only once per Central-time calendar day**, across all DM threads, group DMs and server Activities using the same Discord account.
+- The dedicated Supabase table `clue5_discord_daily_sessions` stores the encrypted daily puzzle session keyed by `discord_user_id` + `puzzle_day`. Its primary key prevents multiple fresh sessions for the same day, and a version-checked update prevents simultaneous chats from both advancing the state.
+- Every Daily API operation verifies Discord OAuth identity and membership in the active Discord Activity; client localStorage and client-supplied daily tokens are **not** authoritative.
+- Reopening the Daily case in another conversation resumes the same clues, guesses, and finished result. Completing the case does not permit another scored attempt that day. A fresh mystery opens the following day in America/Chicago.
+- Unlimited Practice and Party Mode intentionally remain replayable and are not subject to the one-Daily limit.
+- Test on one Discord account in two different DMs, two server channels, and two devices; check simultaneous guesses, solved/unsolved state, and midnight Central reset. Existing sessions saved only in older per-chat browser storage cannot be migrated automatically to this new server-side table.
