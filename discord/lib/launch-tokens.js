@@ -21,12 +21,21 @@ export async function rememberLaunch(interaction){
 }
 export async function claimLaunch(channel,user){
  const now=new Date().toISOString();
- const query='?channel_id=eq.'+encodeURIComponent(channel)+'&user_id=eq.'+encodeURIComponent(user)+'&expires_at=gt.'+encodeURIComponent(now)+'&consumed_at=is.null&order=created_at.desc&limit=1&select=launch_id,interaction_token';
- const r=await fetch(url(query),{headers:headers()});
- if(!r.ok)throw Error('Could not read result callback');
- const rows=await r.json(),one=rows[0];
+ // Discord's Activity location channel may differ from the channel attached to
+ // the /clue5 interaction in private DMs. Prefer an exact match when available,
+ // and otherwise use the latest unexpired /clue5 launch by this verified player.
+ // Never allow a client to submit a destination or callback token.
+ async function find(matchChannel){
+  const query='?user_id=eq.'+encodeURIComponent(user)+
+   (matchChannel?'&channel_id=eq.'+encodeURIComponent(channel):'')+
+   '&expires_at=gt.'+encodeURIComponent(now)+
+   '&consumed_at=is.null&order=created_at.desc&limit=1&select=launch_id,interaction_token';
+  const r=await fetch(url(query),{headers:headers()});
+  if(!r.ok)throw Error('Could not read result callback ('+r.status+')');
+  const rows=await r.json();return rows[0]||null;
+ }
+ const one=await find(true)||await find(false);
  if(!one)return null;
- // Atomic claim prevents multiple completed cases reusing the same launch interaction.
  const claim='?launch_id=eq.'+encodeURIComponent(one.launch_id)+'&consumed_at=is.null&select=launch_id';
  const marked=await fetch(url(claim),{method:'PATCH',headers:headers('return=representation'),body:JSON.stringify({consumed_at:new Date().toISOString()})});
  if(!marked.ok)throw Error('Could not claim result callback');
