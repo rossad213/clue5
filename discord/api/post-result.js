@@ -16,7 +16,7 @@ export default async function handler(req,res){
    const currentDay=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
    const key=process.env.SUPABASE_SERVICE_ROLE_KEY;
    if(!key||!process.env.SUPABASE_URL)throw Error('Daily result storage unavailable');
-   const url=process.env.SUPABASE_URL.replace(/\\/$/,'')+'/rest/v1/clue5_discord_daily_sessions?discord_user_id=eq.'+
+   const url=process.env.SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/clue5_discord_daily_sessions?discord_user_id=eq.'+
     encodeURIComponent(activity.userId)+'&puzzle_day=eq.'+encodeURIComponent(currentDay)+'&select=session_token';
    const saved=await fetch(url,{headers:{apikey:key,Authorization:'Bearer '+key},cache:'no-store'});
    if(!saved.ok)throw Error('Could not load Daily result');
