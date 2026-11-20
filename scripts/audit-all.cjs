@@ -25,6 +25,7 @@ const pools=[
 ];
 const norm=x=>String(x||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[’‘]/g,"'").toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 const errors=[],warnings=[],quarantined=[],seen=new Map(),seenNewClues=new Map();
+const LEGACY_QUARANTINE_CEILING=283; // 2026-11-19 baseline; corrections should reduce this.
 let records=0,clues=0,legacyClue4=0,legacyClue5=0;
 const broadCategories=new Set(['Arts & Entertainment','Place','Person','Object']);
 const suspect=/\b(?:first woman|first person|first man|only living|only person|the only|world's largest|world's highest|the largest|the longest|the first|the last|the tallest|the deepest)\b/i;
@@ -75,6 +76,7 @@ for(const pool of pools){
   }
  }
 }
+if(quarantined.length>LEGACY_QUARANTINE_CEILING)errors.push('Legacy spoiler exclusions increased from '+LEGACY_QUARANTINE_CEILING+' to '+quarantined.length);
 const report={
  summary:{cases:records,clues,originalDaily:base.length,newDaily:expansion.length,originalPractice:originalPractice.length,newPractice:addedPractice.length},
  validation:{hardErrors:errors.length,errors:errors.slice(0,100),legacyQuarantined:quarantined.length,legacyClue4Leaks:legacyClue4,legacyClue5Leaks:legacyClue5,legacyQuarantine:quarantined,editorialWarnings:warnings.length,warningExamples:warnings.slice(0,80)},
