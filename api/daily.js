@@ -58,7 +58,7 @@ function hint(answer){
 function cluesFor(c){return c[2].slice();}
 function answerObj(session,c){
  const complete=session.done;
- return {day:session.day,category:c[1],caseLabel:'DAILY DOSSIER',clue:session.clue,used:session.used,done:complete,won:session.won,score:session.score,clues:cluesFor(c).slice(0,session.clue),answer:complete?c[0]:null,playedOn:complete?(session.playedOn||session.day):null,late:complete&&(session.playedOn||session.day)!==session.day,token:encrypt(session)};
+ return {day:session.day,category:c[0]==='Yoda'?'Movie Characters':c[1],caseLabel:'DAILY DOSSIER',clue:session.clue,used:session.used,done:complete,won:session.won,score:session.score,clues:cluesFor(c).slice(0,session.clue),answer:complete?c[0]:null,playedOn:complete?(session.playedOn||session.day):null,late:complete&&(session.playedOn||session.day)!==session.day,token:encrypt(session)};
 }
 function respond(res,status,obj){res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('Cache-Control','no-store, private, max-age=0');res.setHeader('X-Content-Type-Options','nosniff');res.end(JSON.stringify(obj));}
 module.exports=async function handler(req,res){
