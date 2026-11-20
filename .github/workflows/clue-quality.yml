@@ -1,0 +1,27 @@
+name: Clue5 Clue Quality
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/daily-pool.cjs"
+      - "server/daily-expansion.cjs"
+      - "data/practice.js"
+      - "scripts/audit-expansions.cjs"
+      - ".github/workflows/clue-quality.yml"
+  pull_request:
+    paths:
+      - "server/daily-pool.cjs"
+      - "server/daily-expansion.cjs"
+      - "data/practice.js"
+      - "scripts/audit-expansions.cjs"
+      - ".github/workflows/clue-quality.yml"
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit daily and practice clue banks
+        run: node scripts/audit-expansions.cjs
