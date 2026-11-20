@@ -7,6 +7,7 @@ on:
       - "server/daily-expansion.cjs"
       - "data/practice.js"
       - "scripts/audit-expansions.cjs"
+      - "scripts/audit-all.cjs"
       - ".github/workflows/clue-quality.yml"
   pull_request:
     paths:
@@ -23,5 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Audit daily and practice clue banks
+      - name: Audit new-case quality
         run: node scripts/audit-expansions.cjs
+      - name: Audit complete Clue5 library
+        run: node scripts/audit-all.cjs
