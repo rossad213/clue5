@@ -16,7 +16,7 @@ const newCases=[...expansionDaily,...practice.slice(ORIGINAL_PRACTICE_COUNT)];
 const answers=new Map();
 for(const c of all){
  if(!Array.isArray(c)||!Array.isArray(c[2])||c[2].length!==5){errors.push('Malformed case '+c?.[0]);continue}
- const n=norm(c[0]);
+ const n=norm(c[0]).replace(/^(the|a|an) /,'');
  if(answers.has(n))errors.push('Duplicate answer: '+c[0]+' and '+answers.get(n));
  else answers.set(n,c[0]);
 }
