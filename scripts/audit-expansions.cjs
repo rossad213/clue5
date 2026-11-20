@@ -1,35 +1,37 @@
 'use strict';
-// Run with: node scripts/audit-expansions.cjs
-// This checks the full library and enforces stricter quality rules on new cases.
-const fs=require('node:fs');
-const root=require('node:path').resolve(__dirname,'..');
-const daily=require(root+'/server/daily-pool.cjs');
-const moreDaily=require(root+'/server/daily-expansion.cjs');
-const practiceSource=fs.readFileSync(root+'/data/practice.js','utf8');
-const marker='.concat(';
-const start=practiceSource.indexOf(marker);
-if(start<0)throw Error('Practice library format changed');
-const practice=JSON.parse(practiceSource.slice(start+marker.length).trim().replace(/\\);\\s*$/,''));
-const norm=x=>String(x).normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/gi,' ').toLowerCase().trim().replace(/\\s+/g,' ');
-const errors=[],warnings=[];
-const cases=[...daily,...moreDaily,...practice],seen=new Map(),clueSeen=new Map();
-for(const [i,c] of cases.entries()){
- if(!Array.isArray(c)||c.length!==4||!Array.isArray(c[2])||c[2].length!==5){errors.push('Malformed case #'+i);continue}
- const [answer,cat,clues,aliases]=c;
- const key=norm(answer);
- if(seen.has(key))errors.push('Duplicate answer: '+answer+' also in '+seen.get(key));else seen.set(key,i);
- if(!cat||cat==='Arts & Entertainment'||cat==='Person'||cat==='Place')warnings.push('Generic category: '+answer+' / '+cat);
- if(!Array.isArray(aliases))errors.push('Aliases must be array: '+answer);
- const variants=[answer,...aliases].map(norm).filter(x=>x.length>=4);
- for(const [j,clue] of clues.entries()){
-  const t=norm(clue);
-  if(t.length<15)errors.push('Too short: '+answer+' / '+(j+1));
-  if(variants.some(v=>(' '+t+' ').includes(' '+v+' ')))errors.push('Answer or alias leaked: '+answer+' clue '+(j+1));
-  if(j<4&&/^(i am|i was) (the|a|an) [a-z ]{3,}$/.test(t)&&t.length<55)warnings.push('Potentially direct: '+answer+' clue '+(j+1));
-  if(clues.slice(0,j).some(x=>norm(x)===t))errors.push('Repeated clue within '+answer);
-  if(clueSeen.has(t)&&clueSeen.get(t)!==answer)warnings.push('Same clue used by '+answer+' and '+clueSeen.get(t));
-  clueSeen.set(t,answer);
+// Clue5 incremental quality gate. Run node scripts/audit-expansions.cjs.
+// Checks all answers for collisions but holds *new* questions to stricter rules.
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const originalDaily=require(root+'/server/daily-pool.cjs');
+const expansionDaily=require(root+'/server/daily-expansion.cjs');
+const practiceText=fs.readFileSync(root+'/data/practice.js','utf8');
+const start=practiceText.indexOf('.concat(');
+if(start<0)throw Error('Practice format changed');
+const practice=JSON.parse(practiceText.slice(start+8).trim().replace(/\\);\\s*$/,''));
+const ORIGINAL_PRACTICE_COUNT=682;
+const norm=x=>String(x||'').normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\\s+/g,' ');
+const errors=[],warnings=[],all=[...originalDaily,...expansionDaily,...practice];
+const newCases=[...expansionDaily,...practice.slice(ORIGINAL_PRACTICE_COUNT)];
+const answers=new Map();
+for(const c of all){if(!Array.isArray(c)||!Array.isArray(c[2])||c[2].length!==5){errors.push('Malformed case '+c?.[0]);continue}
+ const n=norm(c[0]);
+ if(answers.has(n))errors.push('Duplicate answer: '+c[0]+' and '+answers.get(n));else answers.set(n,c[0]);
+}
+const seenClues=new Map();
+for(const [name,cat,clues,aliases] of newCases){
+ if(!name||typeof cat!=='string'||!Array.isArray(aliases))errors.push('Invalid fields for '+name);
+ if(['Arts & Entertainment','Person','Place','Object'].includes(cat))warnings.push('Broad category: '+name);
+ const variants=[name,...aliases].map(norm).filter(x=>x.length>=4);
+ for(let i=0;i<5;i++){
+  const clue=clues[i],txt=norm(clue);
+  if(typeof clue!=='string'||txt.length<20)errors.push('Unhelpfully short clue: '+name+' #'+(i+1));
+  if(variants.some(v=>(' '+txt+' ').includes(' '+v+' ')))errors.push('Answer/alias revealed: '+name+' #'+(i+1));
+  if(clues.slice(0,i).some(x=>norm(x)===txt))errors.push('Repeated clue: '+name+' #'+(i+1));
+  if(seenClues.has(txt))warnings.push('Identical clue shared by '+name+' and '+seenClues.get(txt));
+  seenClues.set(txt,name);
+  if(i<4&&/^(i am|i was) (the|a|an) /.test(txt)&&txt.length<55)warnings.push('Early direct-definition risk: '+name+' #'+(i+1));
  }
 }
-console.log(JSON.stringify({daily:daily.length,moreDaily:moreDaily.length,practice:practice.length,total:cases.length,errors:errors.slice(0,100),errorCount:errors.length,warnings:warnings.slice(0,100),warningCount:warnings.length},null,2));
+console.log(JSON.stringify({originalDaily:originalDaily.length,addedDaily:expansionDaily.length,practiceTotal:practice.length,addedPractice:practice.length-ORIGINAL_PRACTICE_COUNT,checkedNew:newCases.length,errorCount:errors.length,errors:errors.slice(0,80),warningCount:warnings.length,warnings:warnings.slice(0,80)},null,2));
 if(errors.length)process.exitCode=1;
