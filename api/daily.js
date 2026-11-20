@@ -6,14 +6,14 @@ const cases=[...baseCases,...expansionCases];
 const answerAliases=require('../assets/answer-aliases.js');
 const spoilerGuard=require('../assets/clue-safety.js');
 const answerMatch=require('../assets/answer-match.js');
-// Preserve all published Daily assignments through November 19, 2026.
-// Introduce the new bank starting November 20, so players see new material
+// Preserve all published Daily assignments through November 22, 2026.
+// Introduce the new bank starting November 23, so players see new material
 // without reshuffling previously published cases or archived sessions.
 const baseSafeCases=spoilerGuard.clean(baseCases,answerAliases);
 const expansionSafeCases=spoilerGuard.clean(expansionCases,answerAliases);
 const secret=process.env.CLUE5_DAILY_SECRET;
 const START='2026-11-15';
-const EXPANSION_START='2026-11-20';
+const EXPANSION_START='2026-11-23';
 const validDay=(day,today)=>typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&day>=START&&day<=today&&new Date(day+'T12:00:00Z').toISOString().slice(0,10)===day;
 const n=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
 const signed=s=>crypto.createHmac('sha256',secret).update(s).digest();
