@@ -1,10 +1,16 @@
 'use strict';
 const crypto=require('node:crypto');
-const cases=require('../server/daily-pool.cjs');
+const baseCases=require('../server/daily-pool.cjs');
+const expansionCases=require('../server/daily-expansion.cjs');
+const cases=[...baseCases,...expansionCases];
 const answerAliases=require('../assets/answer-aliases.js');
 const spoilerGuard=require('../assets/clue-safety.js');
 const answerMatch=require('../assets/answer-match.js');
-const safeCases=spoilerGuard.clean(cases,answerAliases);
+// Keep the established 730-case schedule intact; new Daily cases only begin
+// after the original sequence has finished. Changing the pool must never
+// rewrite past games or reassign already published dates.
+const baseSafeCases=spoilerGuard.clean(baseCases,answerAliases);
+const expansionSafeCases=spoilerGuard.clean(expansionCases,answerAliases);
 const secret=process.env.CLUE5_DAILY_SECRET;
 const START='2026-11-15';
 const validDay=(day,today)=>typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&day>=START&&day<=today&&new Date(day+'T12:00:00Z').toISOString().slice(0,10)===day;
@@ -12,15 +18,15 @@ const n=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f
 const signed=s=>crypto.createHmac('sha256',secret).update(s).digest();
 const dateKey=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const ordinal=s=>{const [y,m,d]=s.split('-').map(Number);return Math.floor(Date.UTC(y,m-1,d)/86400000)};
-const categories=[...new Set(safeCases.map(c=>c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1]))];
-function schedule(){
+function schedule(pool){
+ const categories=[...new Set(pool.map(c=>c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1]))];
  const buckets=Object.fromEntries(categories.map(g=>[g,[]]));
- for(const c of safeCases){let g=c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1];if(buckets[g])buckets[g].push(c);}
+ for(const c of pool){let g=c[1]==='Person'?'People':c[1]==='Place'?'Geography':c[1]==='Event'?'History & Events':c[1];if(buckets[g])buckets[g].push(c);}
  for(const g of categories)buckets[g].sort((a,b)=>Buffer.compare(signed('case:'+a[0]),signed('case:'+b[0])));
- const quota=Object.fromEntries(categories.map(g=>[g,safeCases.length*buckets[g].length/safeCases.length]));
+ const quota=Object.fromEntries(categories.map(g=>[g,pool.length*buckets[g].length/pool.length]));
  const count=Object.fromEntries(categories.map(g=>[g,0]));
  const seq=[],recent=[];
- while(seq.length<safeCases.length){
+ while(seq.length<pool.length){
   let eligible=categories.filter(g=>count[g]<buckets[g].length&&!recent.slice(-4).includes(g));
   if(!eligible.length)eligible=categories.filter(g=>count[g]<buckets[g].length);
   eligible.sort((a,b)=>(count[a]+0.5)/quota[a]-(count[b]+0.5)/quota[b]||a.localeCompare(b));
@@ -30,7 +36,7 @@ function schedule(){
  return seq;
 }
 let order;
-function select(day){if(!order)order=schedule();if(!order.length)throw new Error('Empty daily schedule');const diff=ordinal(day)-ordinal(START);return order[((diff%order.length)+order.length)%order.length];}
+function select(day){if(!order)order=[...schedule(baseSafeCases),...schedule(expansionSafeCases)];if(!order.length)throw new Error('Empty daily schedule');const diff=ordinal(day)-ordinal(START);return order[((diff%order.length)+order.length)%order.length];}
 function encrypt(obj){
  const iv=crypto.randomBytes(12),key=crypto.createHash('sha256').update(secret).digest(),cipher=crypto.createCipheriv('aes-256-gcm',key,iv);
  const body=Buffer.concat([cipher.update(JSON.stringify(obj)),cipher.final()]);
