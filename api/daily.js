@@ -76,6 +76,16 @@ function cluesFor(c){return c[2].slice();}
 // Display-specific subcategories. Preserve the stored category for stable daily scheduling.
 const categoryGroups={"Paintings & Art":["The Starry Night","The Last Supper","Girl with a Pearl Earring","Guernica","American Gothic","The Birth of Venus","The Thinker","The Kiss by Klimt"],"Classical Music":["Beethoven's Fifth Symphony","Beethoven's Ninth Symphony","The Four Seasons"],"Books & Literature":["Romeo and Juliet","Hamlet","Othello","Frankenstein novel","Moby-Dick","The Great Gatsby","To Kill a Mockingbird","1984 novel","Fahrenheit 451","The Catcher in the Rye","The Hobbit","The Hunger Games","The Lion the Witch and the Wardrobe","Alice's Adventures in Wonderland"],"Fictional Characters":["Sherlock Holmes","Hercule Poirot","Miss Marple","Black Panther","Iron Man","Captain America","Thor","Hulk"],"Movie Characters":["Indiana Jones","Yoda","R2-D2","E.T. the Extra-Terrestrial"],"Movies":["Jurassic Park","Jaws","Titanic film","The Matrix","Inception","Interstellar","Back to the Future","The Sound of Music","The Godfather","Pulp Fiction","Forrest Gump"],"Musicians & Bands":["The Rolling Stones","Queen band","Elvis Presley","Whitney Houston","Aretha Franklin","Madonna","Lady Gaga","Kendrick Lamar"]};
 const categoryLabels=Object.fromEntries(Object.entries(categoryGroups).flatMap(([group,names])=>names.map(name=>[name,group])));
+Object.assign(categoryLabels,{
+ "Mount Everest":"Natural Landmarks",
+ "Nelson Mandela":"Historical Figures",
+ "Ada Lovelace":"Scientists & Inventors",
+ "The Eiffel Tower":"Historic Landmarks",
+ "Serena Williams":"Athletes",
+ "The Amazon River":"Rivers & Waterways",
+ "The Colosseum":"Historic Landmarks",
+ "Cleopatra":"Historical Figures"
+});
 function displayCategory(c){return categoryLabels[c[0]]||c[1];}
 function answerObj(session,c){
  const complete=session.done;
