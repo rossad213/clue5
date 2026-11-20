@@ -240,7 +240,19 @@ body{background:radial-gradient(ellipse at 50% 0,#302117 0,transparent 46%),#0c0
 .clue5-less-motion *, .clue5-less-motion *::before, .clue5-less-motion *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 .case-day.catchup{background:#263447;border-color:#6f93b1;color:#cfe7ff}.legend-dot.catchup{background:#6f93b1}.archive-play{display:block;margin-top:15px}.history-status.catchup{color:#325a8c}
 @media(max-width:800px){.top{flex-wrap:wrap;gap:8px}.clue5-top-left{gap:6px}.clue5-top-left .brand{font-size:22px}.account-top-button{font-size:12px;padding:7px 10px}}
-@media(max-width:470px){.clue5-top-left{width:100%;justify-content:space-between}.clue5-top-left .brand{font-size:19px}.account-top-button{font-size:11px;padding:7px}.clue5-account-dialog{padding:18px}}
+@media(max-width:600px){
+ .top{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:16px 14px}
+ .clue5-top-left{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;width:100%;flex-wrap:nowrap}
+ .clue5-top-left .brand{font-size:clamp(17px,5vw,22px);letter-spacing:.07em;min-width:0;padding:4px 0;justify-self:start}
+ .clue5-top-left .brand-mark{width:31px;height:31px}
+ .account-top-button{font-size:12px;padding:9px 8px;min-height:42px}
+ .top .header-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+ .top .header-actions .mini{width:100%;min-width:0;min-height:42px;padding:9px 8px;font-size:13px;text-align:center}
+ .top .header-actions .install-app[hidden]{display:none!important}
+ .top .header-actions:has(.install-app[hidden]){grid-template-columns:1fr}
+ .clue5-account-dialog{padding:18px}
+}
+@media(max-width:380px){.top{padding-inline:10px}.clue5-top-left{gap:5px}.clue5-top-left .brand{font-size:17px}.clue5-top-left .brand-mark{width:26px;height:26px}.account-top-button{font-size:11px;padding:8px 6px}}
 </style></head><body>
 <header class="top"><div class="clue5-top-left"><button class="brand" id="homeLink"><img class="brand-mark" src="/favicon.png?v=3" alt="" aria-hidden="true" width="32" height="32"> <span>CLUE<b>5</b></span></button><button class="mini account-top-button" id="accountButton" type="button">♙ Sign in</button><button class="mini account-top-button" id="settingsButton" type="button" aria-label="Clue5 settings">⚙ Settings</button></div><div class="header-actions"><button class="mini install-app" id="installApp" type="button" hidden>↧ Install App</button><button class="mini" id="statsButton">▦ Archive</button></div></header>
 <main class="wrap"><section id="home"><div class="hero"><div class="hero-content"><div class="eyebrow">The detective's desk · Case files are open</div><h1>FIVE CLUES.<br><em>ONE MYSTERY.</em></h1><p>Trust your instincts. Follow the evidence.<br>Every clue brings you closer to the truth.</p><div class="chips"><span>◈ Five clues</span><span>⌖ Six guesses</span><span>✧ New daily case</span></div><button class="hero-cta" id="heroDaily">START DAILY CASE →</button><div class="hero-sub">▦ A NEW MYSTERY EVERY DAY</div></div></div><div class="cards"><article class="card"><div class="eyebrow">The official investigation</div><h2>Daily Mystery</h2><p>One shared mystery each day. Solve it in fewer clues to earn more points and protect your streak.</p><button class="btn" id="daily">OPEN TODAY'S CASE ↗</button><div class="small" id="dailyStatus"></div></article><article class="card"><div class="eyebrow">The investigation never ends</div><h2>Unlimited Practice</h2><p>Explore hundreds of mysteries spanning people, places, science, history, art, entertainment and more.</p><button class="btn outline" id="practice">ENTER CASE ARCHIVES ↗</button></article></div><div class="rules"><article><strong>01 · Examine evidence</strong><p>Clues start extremely vague and grow progressively easier.</p></article><article><strong>02 · Make your accusation</strong><p>Six guesses per case. Revealing another clue is free.</p></article><article><strong>03 · Crack the case</strong><p>The earlier you solve, the higher your score.</p></article></div>
