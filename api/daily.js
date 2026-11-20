@@ -6,13 +6,14 @@ const cases=[...baseCases,...expansionCases];
 const answerAliases=require('../assets/answer-aliases.js');
 const spoilerGuard=require('../assets/clue-safety.js');
 const answerMatch=require('../assets/answer-match.js');
-// Keep the established 730-case schedule intact; new Daily cases only begin
-// after the original sequence has finished. Changing the pool must never
-// rewrite past games or reassign already published dates.
+// Preserve all published Daily assignments through November 19, 2026.
+// Introduce the new bank starting November 20, so players see new material
+// without reshuffling previously published cases or archived sessions.
 const baseSafeCases=spoilerGuard.clean(baseCases,answerAliases);
 const expansionSafeCases=spoilerGuard.clean(expansionCases,answerAliases);
 const secret=process.env.CLUE5_DAILY_SECRET;
 const START='2026-11-15';
+const EXPANSION_START='2026-11-20';
 const validDay=(day,today)=>typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&day>=START&&day<=today&&new Date(day+'T12:00:00Z').toISOString().slice(0,10)===day;
 const n=s=>String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
 const signed=s=>crypto.createHmac('sha256',secret).update(s).digest();
@@ -35,8 +36,18 @@ function schedule(pool){
  }
  return seq;
 }
-let order;
-function select(day){if(!order)order=[...schedule(baseSafeCases),...schedule(expansionSafeCases)];if(!order.length)throw new Error('Empty daily schedule');const diff=ordinal(day)-ordinal(START);return order[((diff%order.length)+order.length)%order.length];}
+let baseOrder,futureOrder;
+function select(day){
+ if(!baseOrder)baseOrder=schedule(baseSafeCases);
+ if(!baseOrder.length)throw new Error('Empty base daily schedule');
+ if(day<EXPANSION_START){
+  const offset=ordinal(day)-ordinal(START);
+  return baseOrder[((offset%baseOrder.length)+baseOrder.length)%baseOrder.length];
+ }
+ if(!futureOrder)futureOrder=[...schedule(expansionSafeCases),...baseOrder];
+ const offset=ordinal(day)-ordinal(EXPANSION_START);
+ return futureOrder[((offset%futureOrder.length)+futureOrder.length)%futureOrder.length];
+}
 function encrypt(obj){
  const iv=crypto.randomBytes(12),key=crypto.createHash('sha256').update(secret).digest(),cipher=crypto.createCipheriv('aes-256-gcm',key,iv);
  const body=Buffer.concat([cipher.update(JSON.stringify(obj)),cipher.final()]);
