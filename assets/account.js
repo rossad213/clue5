@@ -136,12 +136,13 @@
    };
    document.getElementById('accountSignUp').onclick=async()=>{
     const email=document.getElementById('accountEmail').value.trim(),password=document.getElementById('accountPassword').value;
-    if(!email||password.length<6){notify('Enter a valid email and a password of at least six characters.',true);return}
+    if(!document.getElementById('accountEmail').checkValidity()||password.length<6){notify('Enter a valid email and a password of at least six characters.',true);return}
+    const signupButton=document.getElementById('accountSignUp');signupButton.disabled=true;signupButton.textContent='Creating account…';
     try{
      const result=await request('signup?redirect_to='+encodeURIComponent('https://clue5.io/'),{method:'POST',body:JSON.stringify({email,password})});
      if(result.access_token){persistSession({...result,expires_at:Math.floor(Date.now()/1000)+Number(result.expires_in||3600)});draw('account');await syncNow(true)}
-     else notify('Check your email for a confirmation link, then return here to sign in.');
-    }catch(e){notify(e.message,true)}
+     else notify('Account request received. Check your inbox and spam folder for the confirmation link. If no email arrives, contact support.');
+    }catch(e){notify('Account could not be created: '+e.message,true)}finally{signupButton.disabled=false;signupButton.textContent='Create an account'}
    };
    document.getElementById('accountRecover').onclick=async()=>{
     const email=document.getElementById('accountEmail').value.trim();
