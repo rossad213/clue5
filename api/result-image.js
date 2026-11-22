@@ -172,7 +172,7 @@ function image(x){
   const unit=size/12,spacing=size*0.20,lineWidth=unit*weight,letterWidth=unit*10+spacing;
   const text=String(str).toUpperCase();let advance=0;
   for(const ch of text){
-   const cw=ch===' '?size*.38:ch==='I'||ch==='1'?size*.78:ch==='.'?size*.24:ch==='/'?size*.65:ch==='-'?size*.65:letterWidth;
+   const cw=ch===' '?size*.38:ch==='I'?size*.92:ch==='1'?size*.78:ch==='.'?size*.24:ch==='/'?size*.65:ch==='-'?size*.65:letterWidth;
    if(advance+cw>maxWidth)break;
    const segs=pathCache[ch]||[];
    if(segs.length){
