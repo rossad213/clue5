@@ -8,6 +8,9 @@ on:
       - "data/practice.js"
       - "scripts/audit-expansions.cjs"
       - "scripts/audit-all.cjs"
+      - "scripts/test-answer-aliases.cjs"
+      - "assets/answer-aliases.js"
+      - "assets/answer-match.js"
       - ".github/workflows/clue-quality.yml"
   pull_request:
     paths:
@@ -15,6 +18,9 @@ on:
       - "server/daily-expansion.cjs"
       - "data/practice.js"
       - "scripts/audit-expansions.cjs"
+      - "scripts/test-answer-aliases.cjs"
+      - "assets/answer-aliases.js"
+      - "assets/answer-match.js"
       - ".github/workflows/clue-quality.yml"
 jobs:
   validate:
@@ -24,6 +30,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Test Daily and Unlimited answer aliases
+        run: node scripts/test-answer-aliases.cjs
       - name: Audit new-case quality
         run: node scripts/audit-expansions.cjs
       - name: Audit complete Clue5 library
