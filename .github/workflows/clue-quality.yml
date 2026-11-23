@@ -9,6 +9,7 @@ on:
       - "scripts/audit-expansions.cjs"
       - "scripts/audit-all.cjs"
       - "scripts/test-answer-aliases.cjs"
+      - "scripts/audit-answer-coverage.cjs"
       - "assets/answer-aliases.js"
       - "assets/answer-match.js"
       - ".github/workflows/clue-quality.yml"
@@ -19,6 +20,7 @@ on:
       - "data/practice.js"
       - "scripts/audit-expansions.cjs"
       - "scripts/test-answer-aliases.cjs"
+      - "scripts/audit-answer-coverage.cjs"
       - "assets/answer-aliases.js"
       - "assets/answer-match.js"
       - ".github/workflows/clue-quality.yml"
@@ -32,6 +34,8 @@ jobs:
           node-version: '22'
       - name: Test Daily and Unlimited answer aliases
         run: node scripts/test-answer-aliases.cjs
+      - name: Audit every Daily and Unlimited answer variant and collision
+        run: node scripts/audit-answer-coverage.cjs
       - name: Audit new-case quality
         run: node scripts/audit-expansions.cjs
       - name: Audit complete Clue5 library
