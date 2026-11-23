@@ -241,6 +241,11 @@ const clue5AnswerAliases={
     "planet earth",
     "terra"
   ],
+  // Taman Negara is the established short name of this Malaysian national park.
+  // Do not globally drop "National Park" from answers: that creates collisions.
+  "Taman Negara National Park": [
+    "Taman Negara"
+  ],
   "Mount Everest": [
     "everest"
   ],
