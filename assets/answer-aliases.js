@@ -281,7 +281,6 @@ const clue5AnswerAliases={
   "Capitol Reef National Park": ["Capitol Reef"],
   "Canyonlands National Park": ["Canyonlands"],
   "Acadia National Park": ["Acadia"],
-  "Biscayne National Park": ["Biscayne"],
   "Dry Tortugas National Park": ["Dry Tortugas"],
   "Great Smoky Mountains National Park": ["Great Smoky Mountains"],
   "Shenandoah National Park": ["Shenandoah"],
@@ -313,7 +312,6 @@ const clue5AnswerAliases={
   "Cuyahoga Valley National Park": ["Cuyahoga Valley"],
   "Great Sand Dunes National Park": ["Great Sand Dunes"],
   "Black Canyon of the Gunnison National Park": ["Black Canyon of the Gunnison"],
-  "Virgin Islands National Park": ["Virgin Islands"],
   "Los Glaciares National Park": ["Los Glaciares"],
   "Iguazu National Park": ["Iguazu"],
   "Tayrona National Park": ["Tayrona"],
@@ -325,7 +323,6 @@ const clue5AnswerAliases={
   "Namib-Naukluft National Park": ["Namib-Naukluft"],
   "Fiordland National Park": ["Fiordland"],
   "Abel Tasman National Park": ["Abel Tasman"],
-  "Tongariro National Park": ["Tongariro"],
   "Mount Aspiring National Park": ["Mount Aspiring"],
   "Kakadu National Park": ["Kakadu"],
   "Uluru-Kata Tjuta National Park": ["Uluru-Kata Tjuta"],
@@ -342,14 +339,12 @@ const clue5AnswerAliases={
   "Ranthambore National Park": ["Ranthambore"],
   "Kaziranga National Park": ["Kaziranga"],
   "Sundarbans National Park": ["Sundarbans"],
-  "Corbett National Park": ["Corbett"],
   "Wilpattu National Park": ["Wilpattu"],
   "Horton Plains National Park": ["Horton Plains"],
   "Fuji-Hakone-Izu National Park": ["Fuji-Hakone-Izu"],
   "Shiretoko National Park": ["Shiretoko"],
   "Daisetsuzan National Park": ["Daisetsuzan"],
   "Yosemite National Park": ["Yosemite"],
-  "Arches National Park": ["Arches"]
 };
 if(typeof module!=='undefined'&&module.exports)module.exports=clue5AnswerAliases;
 if(typeof window!=='undefined')window.CLUE5_ANSWER_ALIASES=clue5AnswerAliases;
