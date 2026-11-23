@@ -559,7 +559,7 @@ $("reveal").onclick=()=>{if(!state||state.done||state.clue>=5)return;if(state.da
  $("shareStatus").textContent='Opening share options…';
  if(window.Clue5ShareCard){
   try{
-   const outcome=await window.Clue5ShareCard.share({...state,streak:state.daily?winStreak():0});
+   const outcome=await window.Clue5ShareCard.share(state);
    $("shareStatus").textContent=typeof outcome==='object'&&outcome.manual?outcome.manual:outcome==='copied-link'?'Copy Link fallback: personalized clue5.io result link copied!':outcome==='shared'?'Result link shared.':outcome==='cancelled'?'Share cancelled.':'Result link ready.';
    return;
   }catch(e){console.warn('Clue5 image sharing unavailable',e);}
