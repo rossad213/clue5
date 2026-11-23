@@ -79,7 +79,6 @@ function resultLink(s){
   w:Boolean(s.won),t:Boolean(s.daily),
   c:Number(s.clue),u:Number(s.used),p:Number(s.score)
  };
- if(s.daily)payload.streak=Math.max(0,Math.min(365,Math.trunc(Number(s.streak)||0)));
  // Only public spoiler-free result values; never include the case answer or session token.
  const encoded=btoa(JSON.stringify(payload)).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
  return URL+'/result?r='+encoded;
