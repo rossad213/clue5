@@ -14,7 +14,9 @@ function parseResult(input){
     if(!Number.isInteger(clue)||clue<1||clue>5||!Number.isInteger(used)||used<0||used>6||!Number.isInteger(score)||score<0||score>100)return null;
     if(x.w&&(score!==(120-clue*20)||used>=6))return null;
     if(!x.w&&score!==0)return null;
-    return {day:d,won:x.w,daily:x.t,clue,used,score,level:x.w?(['','LEGENDARY','MASTER','SENIOR','DETECTIVE','ROOKIE'][clue]):'UNSOLVED'};
+    const streak=x.streak===undefined?null:Number(x.streak);
+    if(streak!==null&&(!x.t||!Number.isInteger(streak)||streak<0||streak>365))return null;
+    return {day:d,won:x.w,daily:x.t,clue,used,score,streak,level:x.w?(['','LEGENDARY','MASTER','SENIOR','DETECTIVE','ROOKIE'][clue]):'UNSOLVED'};
   }catch{return null}
 }
 function tiles(x){return Array.from({length:5},(_,i)=>i>=x.clue?'⬛':x.won&&i===x.clue-1?'🟩':'🟨').join('')}
