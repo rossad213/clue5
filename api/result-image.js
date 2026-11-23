@@ -164,7 +164,9 @@ function image(x){
  9:['M10 5 Q10 0 5 0 Q0 0 0 3 Q0 6 5 6 Q10 6 10 3','M10 4 Q10 10 2 10'],
  '-':['M0 5 L7 5'],
  '/':['M8 0 L0 10'],
- '.':['M0 10 L1 10']
+ '.':['M0 10 L1 10'],
+ '?':['M0 2 Q0 0 5 0 Q10 0 10 3 Q10 5 5 7','M5 10 L5 10'],
+ '!':['M5 0 L5 7','M5 10 L5 10']
  };
  const parsePath=path=>{const t=path.match(/[MLQZ]|-?[0-9]+(?:[.][0-9]+)?/g),segs=[];let i=0,x=0,y=0,startX=0,startY=0;while(i<t.length){const cmd=t[i++];if(cmd==='M'){x=Number(t[i++]);y=Number(t[i++]);startX=x;startY=y;}else if(cmd==='L'){let nx=Number(t[i++]),ny=Number(t[i++]);segs.push([x,y,nx,ny]);x=nx;y=ny;}else if(cmd==='Q'){let cx=Number(t[i++]),cy=Number(t[i++]),nx=Number(t[i++]),ny=Number(t[i++]);let px=x,py=y;for(let k=1;k<=12;k++){let a=k/12,b=1-a,tx=b*b*x+2*b*a*cx+a*a*nx,ty=b*b*y+2*b*a*cy+a*a*ny;segs.push([px,py,tx,ty]);px=tx;py=ty;}x=nx;y=ny;}else if(cmd==='Z'){segs.push([x,y,startX,startY]);x=startX;y=startY;}}return segs;};
  const pathCache={};for(const [c,paths] of Object.entries(FONT_LINES))pathCache[c]=paths.flatMap(parsePath);
@@ -192,7 +194,9 @@ function image(x){
  softText((x.daily?'DAILY':'PRACTICE')+'  '+x.day,414,192,36,[220,177,127],760,.80);
  softText(x.won?'CASE SOLVED':'CASE CLOSED',413,393,64,[255,236,205],760,1.1);
  softText(String(x.score)+' PTS  '+x.level,413,477,42,[255,196,75],760,.95);
- softText(String(x.used)+'/6 INCORRECT GUESSES',413,536,30,[235,215,195],760,.75);
+ softText(String(x.used)+'/6 INCORRECT GUESSES',413,526,30,[235,215,195],760,.75);
+  if(x.daily&&x.streak!==null)softText('DAILY WIN STREAK  '+x.streak,413,556,23,[255,196,75],760,.85);
+  softText('CAN YOU CRACK IT FASTER?',413,585,21,[220,177,127],760,.83);
 
  const raw=Buffer.alloc(H*(W*4+1));for(let y=0;y<H;y++){const dst=y*(W*4+1);raw[dst]=0;pixels.copy(raw,dst+1,y*W*4,(y+1)*W*4)}
  const header=Buffer.alloc(13);header.writeUInt32BE(W,0);header.writeUInt32BE(H,4);header[8]=8;header[9]=6;
