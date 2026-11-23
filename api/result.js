@@ -21,6 +21,9 @@ module.exports=async function resultHandler(req,res){
  const imageUrl=`${ORIGIN}/api/result-image?r=${encoded}`;
  const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
  <title>${esc(title)}</title><meta name="description" content="${esc(description)}">
+ <link rel="icon" type="image/png" sizes="96x96" href="${ORIGIN}/favicon.png?v=3">
+ <link rel="shortcut icon" href="${ORIGIN}/favicon.png?v=3">
+ <link rel="apple-touch-icon" href="${ORIGIN}/favicon.png?v=3">
  <meta name="robots" content="noindex,follow">
  <link rel="canonical" href="${esc(shareUrl)}">
  <meta property="og:type" content="website"><meta property="og:site_name" content="Clue5"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${esc(shareUrl)}">
