@@ -79,21 +79,22 @@ function resultLink(s){
   w:Boolean(s.won),t:Boolean(s.daily),
   c:Number(s.clue),u:Number(s.used),p:Number(s.score)
  };
+ if(s.daily)payload.streak=Math.max(0,Math.min(365,Math.trunc(Number(s.streak)||0)));
  // Only public spoiler-free result values; never include the case answer or session token.
  const encoded=btoa(JSON.stringify(payload)).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,'');
  return URL+'/result?r='+encoded;
 }
 async function share(s){
  const url=resultLink(s);
- // Put ONLY the URL on the clipboard. iMessage creates a tappable link preview;
- // pasting an image on the clipboard prevents iMessage from using the URL.
+ // Prioritize the device's native sharing options, preserving rich URL previews.
+ if(typeof navigator.share==='function'){
+  try{await navigator.share({title:'Clue5 Case Report',url});return 'shared'}
+  catch(error){if(error?.name==='AbortError')return 'cancelled';console.warn('Native share failed',error)}
+ }
+ // Copy Link fallback for unsupported devices and failed native shares.
  if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
   try{await navigator.clipboard.writeText(url);return 'copied-link'}
-  catch(error){console.warn('Unable to copy Clue5 link',error)}
- }
- if(navigator.share){
-  try{await navigator.share({title:'Clue5 Result',url});return 'shared'}
-  catch(error){if(error.name==='AbortError')return 'cancelled'}
+  catch(error){console.warn('Copy Link failed',error)}
  }
  return {manual:url};
 }
