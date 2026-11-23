@@ -194,9 +194,7 @@ function image(x){
  softText((x.daily?'DAILY':'PRACTICE')+'  '+x.day,414,192,36,[220,177,127],760,.80);
  softText(x.won?'CASE SOLVED':'CASE CLOSED',413,393,64,[255,236,205],760,1.1);
  softText(String(x.score)+' PTS  '+x.level,413,477,42,[255,196,75],760,.95);
- softText(String(x.used)+'/6 INCORRECT GUESSES',413,526,30,[235,215,195],760,.75);
-  if(x.daily&&x.streak!==null)softText('DAILY WIN STREAK  '+x.streak,413,556,23,[255,196,75],760,.85);
-  softText('CAN YOU CRACK IT FASTER?',413,585,21,[220,177,127],760,.83);
+ softText(String(x.used)+'/6 INCORRECT GUESSES',413,536,30,[235,215,195],760,.75);
 
  const raw=Buffer.alloc(H*(W*4+1));for(let y=0;y<H;y++){const dst=y*(W*4+1);raw[dst]=0;pixels.copy(raw,dst+1,y*W*4,(y+1)*W*4)}
  const header=Buffer.alloc(13);header.writeUInt32BE(W,0);header.writeUInt32BE(H,4);header[8]=8;header[9]=6;
