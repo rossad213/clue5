@@ -556,11 +556,11 @@ $("guessForm").onsubmit=e=>{e.preventDefault();if(!state||state.done)return;cons
 $("reveal").onclick=()=>{if(!state||state.done||state.clue>=5)return;if(state.daily){playDaily("reveal");return;}state.clue++;save();render()};$("shareResult").onclick=async()=>{
  if(!state?.done)return;
  const report=shareText(state);
- $("shareStatus").textContent='Preparing your Clue5 result link…';
+ $("shareStatus").textContent='Opening share options…';
  if(window.Clue5ShareCard){
   try{
-   const outcome=await window.Clue5ShareCard.share(state,report);
-   $("shareStatus").textContent=typeof outcome==='object'&&outcome.manual?outcome.manual:outcome==='copied-link'?'Personalized clue5.io result link copied! Paste into iMessage to see your preview.':outcome==='shared'?'Result link shared.':outcome==='cancelled'?'Share cancelled.':'Result link ready.';
+   const outcome=await window.Clue5ShareCard.share({...state,streak:state.daily?winStreak():0});
+   $("shareStatus").textContent=typeof outcome==='object'&&outcome.manual?outcome.manual:outcome==='copied-link'?'Copy Link fallback: personalized clue5.io result link copied!':outcome==='shared'?'Result link shared.':outcome==='cancelled'?'Share cancelled.':'Result link ready.';
    return;
   }catch(e){console.warn('Clue5 image sharing unavailable',e);}
  }
