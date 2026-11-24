@@ -76,6 +76,32 @@ for(const [official,short] of [
 }
 assert.equal(matcher.matches('Yellowstone Park',['Yellowstone National Park']),false,
  'Do not infer new aliases from names without verified short-name equivalents');
+// A correctly spelled *different* Clue5 subject must never be rescued by
+// fuzzy typo matching, including when the target uses a vetted short alias.
+const differentSubjects=[
+ ['Iceland','Ireland'],['Ireland','Iceland'],
+ ['Curling','Hurling'],['Hurling','Curling'],
+ ['Tempura','Tempera'],['Tempera','Tempura'],
+ ['Meteor','Meteora'],['Meteora','Meteor'],
+ ['Macaron','Macaroon'],['Macaroon','Macaron'],
+ ['Big Ben','Big Bend National Park'],['Indiana Jones','Indiana Dunes National Park'],
+ ['Impressionism','Expressionism'],['Expressionism','Impressionism'],
+ ['Constructivism','Deconstructivism'],['Deconstructivism','Constructivism'],
+ ["Beethoven's Fifth Symphony","Beethoven's Ninth Symphony"],
+ ["Beethoven's Ninth Symphony","Beethoven's Fifth Symphony"]
+];
+for(const [guess,correct] of differentSubjects){
+ const options=[correct,...(aliases[correct]||[])];
+ assert.equal(matcher.matches(guess,options),false,
+  'A distinct subject was accepted: '+guess+' as '+correct);
+}
+for(const [guess,correct] of [
+ ['Icelnad','Iceland'],['Yellowstone','Yellowstone National Park'],
+ ['Taman Negara','Taman Negara National Park']
+]){
+ assert.equal(matcher.matches(guess,[correct,...(aliases[correct]||[])]),true,
+  'A genuine variation was rejected: '+guess+' as '+correct);
+}
 // Existing exact, typo and numeric safeguards remain in force.
 assert.equal(matcher.matches('great recession', ['2008 Financial Crisis',...(aliases['2008 Financial Crisis']||[])]),true);
 assert.equal(matcher.matches('World War III',['World War II']),false);
