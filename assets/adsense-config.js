@@ -4,5 +4,6 @@
 // Never paste a Google account password or API secret here.
 window.CLUE5_ADSENSE_CONFIG = Object.freeze({
   publisherId: '',
-  homeAdSlot: ''
+  homeAdSlot: '',
+  sidebarAdSlot: ''
 });
