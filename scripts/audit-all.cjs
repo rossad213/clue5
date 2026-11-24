@@ -25,7 +25,7 @@ const pools=[
 ];
 const norm=x=>String(x||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[’‘]/g,"'").toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 const errors=[],warnings=[],quarantined=[],seen=new Map(),seenNewClues=new Map();
-const LEGACY_QUARANTINE_CEILING=283; // 2026-11-19 baseline; corrections should reduce this.
+const LEGACY_QUARANTINE_CEILING=0; // Legacy clues repaired in November 2026; no spoiler exclusions permitted.
 let records=0,clues=0,legacyClue4=0,legacyClue5=0;
 const broadCategories=new Set(['Arts & Entertainment','Place','Person','Object']);
 const suspect=/\b(?:first woman|first person|first man|only living|only person|the only|world's largest|world's highest|the largest|the longest|the first|the last|the tallest|the deepest)\b/i;
