@@ -1,5 +1,5 @@
 /* Clue5 AdSense manual placements.
- * One wide home-page ad; one desktop-only ad below the notebook footer.
+ * One wide bottom ad on all pages; one desktop-only ad below the notebook footer.
  * Neither unit renders until a real publisher ID and its slot are configured.
  * Do not enable site-wide Auto ads: they may overlap game controls.
  */
@@ -40,10 +40,9 @@
   (window.adsbygoogle=window.adsbygoogle||[]).push({});
  }
  function update(){
-  var home=document.getElementById('home');
-  if(home&&!home.classList.contains('hidden')){
-   addUnit('clue5-home-ad',String(config.homeAdSlot||'').trim(),'auto');
-  }
+  // The bottom placement is outside the game view panels, so it also
+  // appears below the Daily, Unlimited, and Archive views.
+  addUnit('clue5-bottom-ad',String(config.bottomAdSlot||config.homeAdSlot||'').trim(),'auto');
   var game=document.getElementById('game');
   // A tall, narrow sidebar on phones/tablets would put an ad beside gameplay
   // controls. Only render the sidebar placement on wide desktop viewports.
