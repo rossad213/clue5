@@ -57,6 +57,25 @@ assert.equal(matcher.matches('AI',['Artificial neural network']),false,
  'AI abbreviation must not match another machine-learning case');
 assert.equal(matcher.matches('The Met',['Museum of Modern Art']),false,
  'Museums must remain distinct');
+// Distinctive short names are sufficient; ordinary qualifiers are optional.
+// Do not accept related but incorrect place types or abbreviations without a
+// vetted short-name alias.
+for(const [official,short] of [
+ ['Yellowstone National Park','Yellowstone'],
+ ['Taman Negara National Park','Taman Negara'],
+ ['Bryce Canyon National Park','Bryce Canyon'],
+ ['Grand Teton National Park','Grand Teton']
+]){
+ const options=[official,...(aliases[official]||[])];
+ for(const guess of [short,short+' Park',short+' NP']){
+  assert.equal(matcher.matches(guess,options),true,official+' should accept '+guess);
+ }
+ for(const guess of [short+' National Forest',short+' State Park',short+' River','National Park','Park','NP']){
+  assert.equal(matcher.matches(guess,options),false,official+' must reject '+guess);
+ }
+}
+assert.equal(matcher.matches('Yellowstone Park',['Yellowstone National Park']),false,
+ 'Do not infer new aliases from names without verified short-name equivalents');
 // Existing exact, typo and numeric safeguards remain in force.
 assert.equal(matcher.matches('great recession', ['2008 Financial Crisis',...(aliases['2008 Financial Crisis']||[])]),true);
 assert.equal(matcher.matches('World War III',['World War II']),false);
