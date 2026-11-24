@@ -8,6 +8,7 @@ on:
       - "data/practice.js"
       - "scripts/audit-expansions.cjs"
       - "scripts/audit-all.cjs"
+      - "scripts/audit-clue-progression.cjs"
       - "scripts/test-answer-aliases.cjs"
       - "scripts/audit-answer-coverage.cjs"
       - "scripts/audit-cross-case-matching.cjs"
@@ -40,6 +41,8 @@ jobs:
         run: node scripts/audit-answer-coverage.cjs
       - name: Reject wrong-answer matches across different cases
         run: node scripts/audit-cross-case-matching.cjs
+      - name: Audit five-clue progression and repeated evidence
+        run: node scripts/audit-clue-progression.cjs
       - name: Audit new-case quality
         run: node scripts/audit-expansions.cjs
       - name: Audit complete Clue5 library
