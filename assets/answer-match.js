@@ -44,17 +44,43 @@
   const q=keywordProfile(guess),a=keywordProfile(candidate);
   return a.length>=2&&q.length===a.length&&a.some(token=>token.length>=4)&&q.every((token,i)=>token===a[i]);
  }
+ // Accept natural, complete guess sentences, but never extract a substring
+ // from an unrelated answer (e.g. "not Taman Negara" stays incorrect).
+ function unwrapGuess(value){
+  let w=words(value);
+  const wrappers=[
+   /^i think (?:it is|its) /,
+   /^i believe (?:it is|its) /,
+   /^my (?:guess|answer) is /,
+   /^i (?:guess|am guessing) /,
+   /^the answer is /,
+   /^(?:it is|its) /,
+   /^is it /
+  ];
+  for(const prefix of wrappers)if(prefix.test(w))return w.replace(prefix,'');
+  return w;
+ }
+ // A title tagged as a film/novel may be described as a movie/book.
+ // Keep that tag: "the movie Gravity" must not match the scientific Gravity.
+ function titleVariant(guess,candidate){
+  const q=words(guess),a=words(candidate);
+  const film=a.match(/^(.+) film$/),novel=a.match(/^(.+) novel$/);
+  if(film)return key(q)===key('the movie '+film[1])||key(q)===key('movie '+film[1]);
+  if(novel)return key(q)===key('the book '+novel[1])||key(q)===key('novel '+novel[1]);
+  return false;
+ }
  function matches(guess,candidates){
-  const q=key(guess);
+  const normalized=unwrapGuess(guess);
+  const q=key(normalized);
   if(!q)return false;
   for(const item of candidates){
    const a=key(item);
    if(!a)continue;
-   if(q===a||keywordMatch(guess,item))return true;
+   if(q===a||keywordMatch(normalized,item)||titleVariant(normalized,item))return true;
    // Preserve Roman numeral identity, especially in wars, monarchs and sequels.
    // A one-character difference between II and III must never count as a typo.
    const romans=s=>words(s).split(' ').filter((v,i,arr)=>/^(?:ii|iii|iv|vi|vii|viii|ix|xi|xii)$/.test(v)||(/^(?:i|v|x)$/.test(v)&&i>0&&i===arr.length-1)).join('|');
-   if(romans(guess)!==romans(item))continue;
+   if(romans(normalized)!==romans(item))continue;
    // Never fuzzy-match distinct years, dates, numbered sequels or similar numeric facts.
    if((q.match(/[0-9]+/g)||[]).join('|')!==(a.match(/[0-9]+/g)||[]).join('|'))continue;
    if(swap(q,a))return true;
