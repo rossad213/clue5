@@ -12,11 +12,14 @@
 
  // Loading the official client also supports AdSense site verification when
  // the publisher ID is set but the two ad slot IDs are not available yet.
- var script=document.createElement('script');
- script.async=true;
- script.crossOrigin='anonymous';
- script.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+encodeURIComponent(publisher);
- document.head.appendChild(script);
+ var clientUrl='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+publisher;
+ if(![...document.querySelectorAll('script[src]')].some(function(tag){return tag.src===clientUrl;})){
+  var script=document.createElement('script');
+  script.async=true;
+  script.crossOrigin='anonymous';
+  script.src=clientUrl;
+  document.head.appendChild(script);
+ }
  var initialized=new Set();
 
  function addUnit(containerId,slot,format){
