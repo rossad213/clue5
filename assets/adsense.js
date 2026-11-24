@@ -1,5 +1,5 @@
 /* Clue5 AdSense: single, explicit home-page ad unit only.
- * No publisher ID / slot = no AdSense network request and no blank ad panel.
+ * No publisher ID = no network request; no ad slot = no blank ad panel.
  * Ads do not render in the active case, archive, or modal.
  * Auto ads must remain disabled in AdSense to avoid uncontrolled overlays.
  */
@@ -7,6 +7,7 @@
  'use strict';
  var config=window.CLUE5_ADSENSE_CONFIG||{};
  var publisher=String(config.publisherId||'').trim();
+ if(/^pub-\d{16}$/.test(publisher))publisher='ca-'+publisher;
  var slot=String(config.homeAdSlot||'').trim();
  var container=document.getElementById('clue5-home-ad');
  if(!container)return;
