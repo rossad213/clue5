@@ -1,6 +1,6 @@
 # Google AdSense for Clue5
 
-Clue5 uses **one explicit, clearly labeled ad unit on the Home page only**.
+Clue5 uses **a wide, labeled ad at the bottom of all game and information pages, plus an optional desktop-only sidebar ad below the notebook**.
 Do not enable Google Auto ads for this single-page game: Auto ads may place
 ads in or near the interactive clues or guess controls.
 
@@ -11,14 +11,13 @@ ads in or near the interactive clues or guess controls.
 3. Find your publisher ID at Account > Settings > Account information.
    It looks like `pub-1234567890123456` (example only).
 4. In Ads > By ad unit > Display ads, create a responsive display ad and copy
-   its numeric **ad unit/slot ID** (not the sample value above).
+   the numeric **ad unit/slot IDs** for a wide responsive unit and optional desktop sidebar unit (not the sample value above).
 5. Edit `assets/adsense-config.js`:
    - `publisherId`: your exact publisher ID in `ca-pub-XXXXXXXXXXXXXXXX` format.
-   - `homeAdSlot`: numeric ad slot ID.
+   - `bottomAdSlot`: numeric responsive slot ID, reused at the bottom of Home, Daily, Unlimited, Archive, How to Play and Privacy.\n   - `sidebarAdSlot`: optional numeric display slot ID for the desktop game notebook.\n   - `homeAdSlot`: legacy fallback if previously configured.
    Leave values empty until ready; no Google code loads in that state.
 6. Keep **Auto ads OFF** in the AdSense site settings to prevent ad placement
-   around interactive game buttons. The custom unit appears after the Home
-   page's introductory content, never inside the active case or archive.
+   around interactive game buttons. The wide unit appears beneath the main page content, and the sidebar unit below 'Every Detail Matters' only on desktop.
 7. Publish an `ads.txt` file at the site root after receiving the publisher
    ID. Follow the exact value provided by the AdSense account. A typical line:
    `google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0`
@@ -38,8 +37,8 @@ ads in or near the interactive clues or guess controls.
 - The script in `assets/adsense.js` loads Google's official AdSense
   client only after a syntactically valid publisher ID is configured.
 - A blank ad slot ID will load the verification script but no visible ad.
-- The actual ad slot is appended only when both IDs are configured.
-- No simulated advertisement or default revenue claim is included.
+- Each placement is enabled separately when the publisher ID and that placement's slot ID are configured.
+- The same wide ad unit is reused across page views. It may be visible below a completed or active game, but is outside the clue and deduction controls.\n- No simulated advertisement or default revenue claim is included.
 - AdSense policies prohibit ads that lead to accidental clicks or encourage
   clicking. Keep adequate separation from game controls.
 - Site eligibility, AdSense review, legal compliance, and consent settings
