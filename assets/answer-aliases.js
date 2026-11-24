@@ -348,8 +348,6 @@ const clue5AnswerAliases={
   // Reviewed factual aliases: collision-checked and screened for clue spoilers.
   "Artificial intelligence": ["AI"],
   "QR code": ["quick response code"],
-  "Solid-state drive": ["SSD","solid state disk"],
-  "Hard drive": ["HDD","hard disk drive"],
   "CT scanner": ["CAT scanner","computed tomography scanner"],
   "MRI scanner": ["MRI machine","magnetic resonance imaging scanner"],
   "ECG": ["EKG"],
@@ -438,7 +436,6 @@ const clue5AnswerAliases={
   "Great Barrier Reef": ["GBR"],
   "James Webb Space Telescope": ["JWST","Webb telescope"],
   "Hubble Space Telescope": ["HST"],
-  "International Space Station": ["ISS"],
   "El Niño Southern Oscillation": ["ENSO"],
   "Electron diffraction": ["electron beam diffraction"]
 };
