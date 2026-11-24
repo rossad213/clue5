@@ -31,7 +31,10 @@ for(const [mode,pool] of groups){
    answer,
    answer.toUpperCase(),
    '  '+answer+'!  ',
-   answer.replace(/\s+/g,'   ')
+   answer.replace(/\s+/g,'   '),
+   'I think it is '+answer,
+   'My guess is '+answer,
+   'Is it '+answer+'?'
   ];
   for(const guess of variants){
    assert(matcher.matches(guess,candidates),mode+' rejected variant '+JSON.stringify(guess)+' of '+answer);
@@ -54,9 +57,15 @@ for(const [mode,pool] of groups){
 assert(total>=2179,'Expected original 2,179 cases; audit newly added cases as well');
 assert.equal(matcher.matches('Taman Negara',['Taman Negara National Park',...(aliases['Taman Negara National Park']||[])]),true);
 assert.equal(matcher.matches('Yellowstone',['Yellowstone National Park',...(aliases['Yellowstone National Park']||[])]),true);
-for(const guess of ['National Park','Taman','a park','the mountain','yellow']){
+for(const guess of ['National Park','Taman','a park','the mountain','yellow','not Yellowstone']){
  assert.equal(matcher.matches(guess,['Yellowstone National Park',...(aliases['Yellowstone National Park']||[])]),false,'Overbroad Yellowstone match: '+guess);
 }
+assert.equal(matcher.matches('the movie Gravity',['Gravity film']),true);
+assert.equal(matcher.matches('the book Dracula',['Dracula novel']),true);
+assert.equal(matcher.matches('the movie Gravity',['Gravity']),false);
+assert.equal(matcher.matches('the movie Parasite',['Parasite film']),true);
+assert.equal(matcher.matches('the book Dracula',['Dracula']),false);
+assert.equal(matcher.matches('I guess World War III',['World War II']),false);
 assert.equal(matcher.matches('World War III',['World War II']),false);
 assert.equal(matcher.matches('2009 Financial Crisis',['2008 Financial Crisis']),false);
 console.log(JSON.stringify({casesAudited:total,alternateFormattingChecks:accepted,casesWithExplicitCuratedOrCaseAliases:explicit,knownAmbiguousAnswerPairs:[...collisions],newCollisions:0},null,2));
