@@ -59,7 +59,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test shared answer matching\n        run: node tests/answer-match.test.cjs\n      - name: Validate website SEO, navigation and ads\n        run: node scripts/audit-site.cjs\n      - name: Check client and API JavaScript syntax\n        run: |\n          node --check assets/adsense.js\n          node --check assets/account.js\n          node --check assets/answer-match.js\n          node --check api/daily.js\n      - name: Test Daily and Unlimited answer aliases
+      - name: Test shared answer matching
+        run: node tests/answer-match.test.cjs
+      - name: Validate website SEO, navigation and ads
+        run: node scripts/audit-site.cjs
+      - name: Check client and API JavaScript syntax
+        run: |
+          node --check assets/adsense.js
+          node --check assets/account.js
+          node --check assets/answer-match.js
+          node --check api/daily.js
+      - name: Test Daily and Unlimited answer aliases
         run: node scripts/test-answer-aliases.cjs
       - name: Audit every Daily and Unlimited answer variant and collision
         run: node scripts/audit-answer-coverage.cjs
