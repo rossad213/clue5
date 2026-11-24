@@ -5,4 +5,4 @@ Disallow: /server/
 Disallow: /data/
 Allow: /data/practice.js
 Disallow: /_vercel/
-Sitemap: https://clue-five-wheat.vercel.app/sitemap.xml
+Sitemap: https://clue5.io/sitemap.xml
