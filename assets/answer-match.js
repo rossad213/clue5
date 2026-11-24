@@ -84,11 +84,27 @@
   const q=words(guess);
   return q===short+' park'||q===short+' np';
  }
+ // Exact names of distinct Clue5 subjects that have been confused by edit
+ // distance. A canonical answer to another puzzle is not a misspelling.
+ // This list contains standalone names only, not unpublished clues or dates.
+ const DISTINCT_NAMES=new Set([
+  'Iceland','Ireland','Curling','Hurling','Tempura','Tempera',
+  'Meteor','Meteora','Macaron','Macaroon','Big Ben',
+  'Indiana Jones','Impressionism','Expressionism',
+  'Constructivism','Deconstructivism',
+  "Beethoven's Fifth Symphony","Beethoven's Ninth Symphony"
+ ].map(key));
  function matches(guess,candidates){
   const normalized=unwrapGuess(guess);
   const q=key(normalized);
   if(!q)return false;
   if(vettedParkVariant(normalized,candidates))return true;
+  // An exact, vetted equivalent always wins, but never reinterpret a known
+  // different subject through typo tolerance.
+  if(DISTINCT_NAMES.has(q)){
+   return candidates.some(item=>q===key(item)||
+     keywordMatch(normalized,item)||titleVariant(normalized,item));
+  }
   for(const item of candidates){
    const a=key(item);
    if(!a)continue;
