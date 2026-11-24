@@ -4,6 +4,8 @@
 // Never paste a Google account password or API secret here.
 window.CLUE5_ADSENSE_CONFIG = Object.freeze({
   publisherId: '',
+  bottomAdSlot: '', // Wide display ad, shown below all page content
+  // homeAdSlot retained for backwards compatibility if already configured.
   homeAdSlot: '',
   sidebarAdSlot: ''
 });
