@@ -33,6 +33,30 @@ for(const [mode,candidates] of Object.entries(modes)){
                      :{won:false,done:false,score:0,used:used+1};
  assert.deepEqual(result,{won:true,done:true,score:60,used:2},mode+' score/guess invariant');
 }
+// Representative independently curated equivalents in both game modes.
+const semanticExamples=[
+ ['Artificial intelligence','AI'],
+ ['MRI scanner','MRI machine'],
+ ['ECG','EKG'],
+ ['Marrakesh','Marrakech'],
+ ['Joan of Arc',"Jeanne d'Arc"],
+ ['Genghis Khan','Chinggis Khan'],
+ ['Orca','killer whale'],
+ ['Formula One','F1'],
+ ['Bubble tea','pearl milk tea'],
+ ['Harry Potter and the Philosopher\'s Stone',"Harry Potter and the Sorcerer's Stone"],
+ ['Museum of Modern Art','MoMA'],
+ ['James Webb Space Telescope','JWST']
+];
+for(const [official,alternate] of semanticExamples){
+ const candidates=[official,...(aliases[official]||[])];
+ assert.equal(matcher.matches(alternate,candidates),true,'Valid equivalence rejected: '+official+' / '+alternate);
+ assert.equal(matcher.matches('not '+alternate,candidates),false,'Overbroad equivalence: '+official);
+}
+assert.equal(matcher.matches('AI',['Artificial neural network']),false,
+ 'AI abbreviation must not match another machine-learning case');
+assert.equal(matcher.matches('The Met',['Museum of Modern Art']),false,
+ 'Museums must remain distinct');
 // Existing exact, typo and numeric safeguards remain in force.
 assert.equal(matcher.matches('great recession', ['2008 Financial Crisis',...(aliases['2008 Financial Crisis']||[])]),true);
 assert.equal(matcher.matches('World War III',['World War II']),false);
