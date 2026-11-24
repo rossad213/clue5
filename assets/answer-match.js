@@ -69,10 +69,26 @@
   if(novel)return key(q)===key('the book '+novel[1])||key(q)===key('novel '+novel[1]);
   return false;
  }
+ // For a National Park with a separately vetted distinctive short-name alias,
+ // accept natural park wording without blindly dropping identifying words.
+ // Example: Yellowstone / Yellowstone Park / Yellowstone NP all identify
+ // Yellowstone National Park, but Yellowstone Forest does not.
+ function vettedParkVariant(guess,candidates){
+  if(!Array.isArray(candidates)||candidates.length<2)return false;
+  const official=words(candidates[0]);
+  if(!official.endsWith(' national park'))return false;
+  const short=official.slice(0,-' national park'.length);
+  if(short.length<5)return false;
+  const vetted=candidates.slice(1).some(alias=>words(alias)===short);
+  if(!vetted)return false;
+  const q=words(guess);
+  return q===short+' park'||q===short+' np';
+ }
  function matches(guess,candidates){
   const normalized=unwrapGuess(guess);
   const q=key(normalized);
   if(!q)return false;
+  if(vettedParkVariant(normalized,candidates))return true;
   for(const item of candidates){
    const a=key(item);
    if(!a)continue;
