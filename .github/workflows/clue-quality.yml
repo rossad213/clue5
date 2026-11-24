@@ -14,6 +14,18 @@ on:
       - "scripts/audit-cross-case-matching.cjs"
       - "assets/answer-aliases.js"
       - "assets/answer-match.js"
+      - "scripts/audit-site.cjs"
+      - "tests/answer-match.test.cjs"
+      - "index.html"
+      - "how-to-play.html"
+      - "privacy.html"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "assets/adsense.js"
+      - "assets/adsense-config.js"
+      - "assets/account.js"
+      - "api/daily.js"
+      - "service-worker.js"
       - ".github/workflows/clue-quality.yml"
   pull_request:
     paths:
@@ -26,6 +38,18 @@ on:
       - "scripts/audit-cross-case-matching.cjs"
       - "assets/answer-aliases.js"
       - "assets/answer-match.js"
+      - "scripts/audit-site.cjs"
+      - "tests/answer-match.test.cjs"
+      - "index.html"
+      - "how-to-play.html"
+      - "privacy.html"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "assets/adsense.js"
+      - "assets/adsense-config.js"
+      - "assets/account.js"
+      - "api/daily.js"
+      - "service-worker.js"
       - ".github/workflows/clue-quality.yml"
 jobs:
   validate:
@@ -35,7 +59,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test Daily and Unlimited answer aliases
+      - name: Test shared answer matching\n        run: node tests/answer-match.test.cjs\n      - name: Validate website SEO, navigation and ads\n        run: node scripts/audit-site.cjs\n      - name: Check client and API JavaScript syntax\n        run: |\n          node --check assets/adsense.js\n          node --check assets/account.js\n          node --check assets/answer-match.js\n          node --check api/daily.js\n      - name: Test Daily and Unlimited answer aliases
         run: node scripts/test-answer-aliases.cjs
       - name: Audit every Daily and Unlimited answer variant and collision
         run: node scripts/audit-answer-coverage.cjs
