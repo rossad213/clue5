@@ -19,7 +19,29 @@ const knownLegacy=new Set([
  'Electric light bulb|Light bulb'
 ]);
 const owners=new Map(),collisions=new Set();
-let total=0,explicit=0,accepted=0;
+let total=0,explicit=0,accepted=0,spellingChecks=0;
+const officialKeys=new Map();
+for(const [,pool] of groups)for(const c of pool){
+ const k=matcher.key(c[0]);
+ if(!officialKeys.has(k))officialKeys.set(k,new Set());
+ officialKeys.get(k).add(c[0]);
+}
+function typoVariant(answer){
+ // Use a single transposition in a descriptive word. Avoid numbers,
+ // initials and short words, where a typo could be a different subject.
+ const parts=answer.split(/(\\s+)/);
+ for(let i=0;i<parts.length;i++){
+  const word=parts[i];
+  if(!/^[A-Za-z]{6,}$/.test(word))continue;
+  const pivot=Math.min(2,word.length-3);
+  if(word[pivot]===word[pivot+1])continue;
+  const swapped=word.slice(0,pivot)+word[pivot+1]+word[pivot]+word.slice(pivot+2);
+  const guess=parts.map((v,j)=>j===i?swapped:v).join('');
+  if(officialKeys.has(matcher.key(guess)))continue;
+  return guess;
+ }
+ return null;
+}
 for(const [mode,pool] of groups){
  for(const [answer,category,clues,own] of pool){
   total++;
@@ -39,6 +61,12 @@ for(const [mode,pool] of groups){
   for(const guess of variants){
    assert(matcher.matches(guess,candidates),mode+' rejected variant '+JSON.stringify(guess)+' of '+answer);
    accepted++;
+  }
+  // Run an actual typo test for every safely eligible case.
+  const typo=typoVariant(answer);
+  if(typo){
+   assert(matcher.matches(typo,candidates),mode+' rejected obvious transposition '+JSON.stringify(typo)+' for '+answer);
+   spellingChecks++;
   }
   for(const alias of candidates.slice(1)){
    assert(matcher.matches(alias,candidates),mode+' rejected explicit alternative '+alias+' of '+answer);
@@ -68,4 +96,4 @@ assert.equal(matcher.matches('the book Dracula',['Dracula']),false);
 assert.equal(matcher.matches('I guess World War III',['World War II']),false);
 assert.equal(matcher.matches('World War III',['World War II']),false);
 assert.equal(matcher.matches('2009 Financial Crisis',['2008 Financial Crisis']),false);
-console.log(JSON.stringify({casesAudited:total,alternateFormattingChecks:accepted,casesWithExplicitCuratedOrCaseAliases:explicit,knownAmbiguousAnswerPairs:[...collisions],newCollisions:0},null,2));
+console.log(JSON.stringify({casesAudited:total,alternateFormattingChecks:accepted,obviousTypoChecks:spellingChecks,casesWithExplicitCuratedOrCaseAliases:explicit,casesWithoutExplicitSemanticAliases:total-explicit,knownAmbiguousAnswerPairs:[...collisions],newCollisions:0,note:'Verified translations and nicknames must be curated; lack of an alias is not itself an error.'},null,2));
