@@ -16,6 +16,8 @@ on:
       - "assets/answer-match.js"
       - "scripts/audit-site.cjs"
       - "tests/answer-match.test.cjs"
+      - "tests/archive-guess.test.cjs"
+      - "scripts/audit-clue-novelty.cjs"
       - "index.html"
       - "how-to-play.html"
       - "privacy.html"
@@ -40,6 +42,8 @@ on:
       - "assets/answer-match.js"
       - "scripts/audit-site.cjs"
       - "tests/answer-match.test.cjs"
+      - "tests/archive-guess.test.cjs"
+      - "scripts/audit-clue-novelty.cjs"
       - "index.html"
       - "how-to-play.html"
       - "privacy.html"
@@ -61,6 +65,8 @@ jobs:
           node-version: '22'
       - name: Test shared answer matching
         run: node tests/answer-match.test.cjs
+      - name: Test archived first-clue submission
+        run: node tests/archive-guess.test.cjs
       - name: Validate website SEO, navigation and ads
         run: node scripts/audit-site.cjs
       - name: Check client and API JavaScript syntax
@@ -77,6 +83,8 @@ jobs:
         run: node scripts/audit-cross-case-matching.cjs
       - name: Audit five-clue progression and repeated evidence
         run: node scripts/audit-clue-progression.cjs
+      - name: Report low-novelty clue candidates for editorial review
+        run: node scripts/audit-clue-novelty.cjs
       - name: Audit new-case quality
         run: node scripts/audit-expansions.cjs
       - name: Audit complete Clue5 library
