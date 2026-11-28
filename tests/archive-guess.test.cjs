@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const page=fs.readFileSync(require('node:path').resolve(__dirname,'../index.html'),'utf8');
+const render=page.slice(page.indexOf('function render(){'),page.indexOf('function finish(won)'));
+assert(render.startsWith('function render(){'),'Render function not found');
+assert(render.includes('$("guessForm").classList.toggle("hidden",s.done)'),'Guess form must open for active cases');
+assert(render.includes('$("guessForm").querySelector("button").disabled=!!s.done;'),'Starting or resuming an archived case must re-enable submit from clue one');
+assert(render.includes('$("giveup").disabled=!!s.done;'),'Starting or resuming an archived case must re-enable give up');
+assert(render.includes('$("reveal").disabled=s.done||s.clue>=5;'),'Reveal button should obey current case state');
+const archive=page.slice(page.indexOf('async function startArchived(day)'),page.indexOf('async function start(daily)'));
+assert(archive.includes('updateDaily(payload);view(\'game\')'),'Archive must use shared daily update to reset game controls');
+const daily=page.slice(page.indexOf('function updateDaily(payload)'),page.indexOf('async function playDaily'));
+assert(daily.includes('save();render();dailyStatus();'),'Daily open must render unlocked controls');
+console.log('Archive regression checks passed: first-clue guesses enabled on newly opened and resumed daily cases.');
