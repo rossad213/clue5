@@ -7,11 +7,11 @@ const expansion=require('../server/daily-expansion.cjs');
 const source=fs.readFileSync(path.resolve(__dirname,'../data/practice.js'),'utf8');
 const marker='.concat(';
 if(!source.includes(marker))throw Error('Practice data format changed');
-const practice=JSON.parse(source.slice(source.indexOf(marker)+marker.length).trim().replace(/\\);\\s*$/,''));
+const practice=JSON.parse(source.slice(source.indexOf(marker)+marker.length).trim().replace(/\);\s*$/,''));
 const pools=[['Daily original',base],['Daily expansion',expansion],['Unlimited',practice]];
 const ignore=new Set('a an the and or but i me my mine we our ours you your yours they them their theirs it its is are was were be been being as at by for from in into on of out over to under with without about above after before between through across among which who what when where why how while though than this that these those many much most more often usually known called found used made also still only some not one two each near around both other another during centuries early later'.split(' '));
 function key(w){return w.replace(/(?:ies)$/,'y').replace(/(?:ing|ed|es|s)$/,'')}
-function words(s){return [...new Set(String(s).toLowerCase().normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').split(/\\s+/).filter(w=>w.length>=4&&!ignore.has(w)).map(key))]}
+function words(s){return [...new Set(String(s).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').split(/\s+/).filter(w=>w.length>=4&&!ignore.has(w)).map(key))]}
 const flagged=[];let checked=0;
 for(const [pool,records] of pools)for(const c of records){
  checked++;if(!Array.isArray(c[2])||c[2].length!==5)throw Error('Invalid clue count: '+c[0]);
