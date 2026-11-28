@@ -46,6 +46,8 @@ const semanticExamples=[
  ['Bubble tea','pearl milk tea'],
  ['Harry Potter and the Philosopher\'s Stone',"Harry Potter and the Sorcerer's Stone"],
  ['Museum of Modern Art','MoMA'],
+ ['Museu do Amanhã','Museum of Tomorrow'],
+ ['Museu do Amanhã','musuem of tomorrow'],
  ['James Webb Space Telescope','JWST']
 ];
 for(const [official,alternate] of semanticExamples){
