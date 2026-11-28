@@ -29,7 +29,7 @@ for(const [,pool] of groups)for(const c of pool){
 function typoVariant(answer){
  // Use a single transposition in a descriptive word. Avoid numbers,
  // initials and short words, where a typo could be a different subject.
- const parts=answer.split(/(\\s+)/);
+ const parts=answer.split(/(\s+)/);
  for(let i=0;i<parts.length;i++){
   const word=parts[i];
   if(!/^[A-Za-z]{6,}$/.test(word))continue;
