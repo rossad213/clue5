@@ -425,6 +425,7 @@ const clue5AnswerAliases={
   "Dracula novel": ["Dracula"],
   "Parasite film": ["Parasite"],
   "Apollo 13 film": ["Apollo 13"],
+  "Museu do Amanhã": ["Museum of Tomorrow", "The Museum of Tomorrow"],
   "Museum of Modern Art": ["MoMA"],
   "Metropolitan Museum of Art": ["The Met"],
   "Los Angeles County Museum of Art": ["LACMA"],
